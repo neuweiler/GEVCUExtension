@@ -12,6 +12,7 @@
 #include "TickHandler.h"
 #include "Heartbeat.h"
 #include "Temperature.h"
+#include "EberspaecherHeater.h"
 
 #ifdef __cplusplus
 extern "C" {

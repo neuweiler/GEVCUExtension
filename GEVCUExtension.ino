@@ -7,6 +7,7 @@ TickHandler *tickHandler;
 void createDevices() {
     Heartbeat *heartbeat = new Heartbeat();
     Temperature *temperatureProbe = new Temperature();
+    EberspaecherHeater *eberspaecherHeater = new EberspaecherHeater();
 }
 
 void setup() {
