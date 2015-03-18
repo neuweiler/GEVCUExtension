@@ -34,6 +34,7 @@ DeviceManager *DeviceManager::getInstance() {
  * Add the specified device to the list of registered devices
  */
 void DeviceManager::addDevice(Device *device) {
+    Logger::info("add device: %s", device->getCommonName());
     if (findDevice(device) == -1) {
         int8_t i = findDevice(NULL);
 

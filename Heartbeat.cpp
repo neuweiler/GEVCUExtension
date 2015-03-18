@@ -14,7 +14,6 @@ Heartbeat::Heartbeat() : Device() {
 void Heartbeat::setup() {
     TickHandler::getInstance()->detach(this);
 
-    Logger::info("add device: Heartbeat");
     Device::setup(); //call base class
 
     TickHandler::getInstance()->attach(this, CFG_TICK_INTERVAL_HEARTBEAT);

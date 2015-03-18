@@ -14,7 +14,6 @@ void Temperature::setup()
 {
     TickHandler::getInstance()->detach(this);
 
-    Logger::info("add device: TemperatureProbe");
     Device::setup(); //call base class
 
     Logger::info("locating temperature sensors...");
