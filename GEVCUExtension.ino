@@ -5,9 +5,12 @@ CanHandler *canHandlerCar;
 TickHandler *tickHandler;
 
 void createDevices() {
-    Heartbeat *heartbeat = new Heartbeat();
-    Temperature *temperatureProbe = new Temperature();
-    EberspaecherHeater *eberspaecherHeater = new EberspaecherHeater();
+    DeviceManager *deviceManager = DeviceManager::getInstance();
+
+    deviceManager->addDevice(new Heartbeat());
+    deviceManager->addDevice(new Temperature());
+    deviceManager->addDevice(new EberspaecherHeater());
+    deviceManager->addDevice(new CanIO());
 }
 
 void setup() {

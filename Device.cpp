@@ -8,12 +8,7 @@
 
 Device::Device()
 {
-    deviceManager = DeviceManager::getInstance();
-//    status = Status::getInstance();
-//    systemIO = SystemIO::getInstance();
-
     //since all derived classes eventually call this base method this will cause every device to auto register itself with the device manager
-    deviceManager->addDevice(this);
     commonName = "Generic Device";
 }
 

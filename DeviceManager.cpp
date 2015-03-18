@@ -34,7 +34,7 @@ DeviceManager *DeviceManager::getInstance() {
  * Add the specified device to the list of registered devices
  */
 void DeviceManager::addDevice(Device *device) {
-    Logger::info("add device: %s", device->getCommonName());
+    Logger::info(device->getId(), "add device: %s", device->getCommonName());
     if (findDevice(device) == -1) {
         int8_t i = findDevice(NULL);
 
@@ -44,20 +44,6 @@ void DeviceManager::addDevice(Device *device) {
             Logger::error("unable to register device, max number of devices reached.");
         }
     }
-
-    /*
-     switch (device->getType()) {
-     case DEVICE_THROTTLE:
-     throttle = (Throttle *) device;
-     break;
-     case DEVICE_BRAKE:
-     brake = (Throttle *) device;
-     break;
-     case DEVICE_MOTORCTRL:
-     motorController = (MotorController *) device;
-     break;
-     }
-     */
 }
 
 /*
@@ -71,20 +57,6 @@ void DeviceManager::removeDevice(Device *device) {
     }
 }
 
-/*Add a new tick handler to the specified device. It should
- //technically be possible to register for multiple intervals
- //and be called for all of them but support for that is not
- //immediately necessary
- */
-//void DeviceManager::addTickObserver(TickObserver *observer, uint32_t frequency) {
-//}
-/*Add a new filter that sends frames through to the device. There definitely has
- to be support for multiple filters per device right from the beginning.
- Mask, id, ext form the filter. canbus sets whether to attach to
- CAN0 or CAN1.
- */
-//void addCanObserver(CanObserver *observer, uint32_t id, uint32_t mask, bool extended, CanHandler::CanBusNode canBus) {
-//}
 /*
  Send an inter-device message. Devtype has to be filled out but could be DEVICE_ANY.
  If devId is anything other than INVALID (0xFFFF) then the message will be targetted to only

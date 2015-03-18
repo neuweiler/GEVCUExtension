@@ -11,7 +11,6 @@
 #include "DeviceTypes.h"
 #include "Sys_Messages.h"
 #include "TickHandler.h"
-//#include "SystemIO.h"
 
 class DeviceManager;
 
@@ -30,11 +29,7 @@ public:
     virtual uint32_t getTickInterval();
     char* getCommonName();
 
-
 protected:
-//    SystemIO *systemIO; // pointer to SystemIO singleton
-//    Status *status; // pointer to Status singleton
-    DeviceManager *deviceManager; // pointer to DeviceManager singleton
     char *commonName;
 
 private:

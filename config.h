@@ -9,6 +9,7 @@
 #include <due_can.h>
 
 #define CFG_VERSION "GEVCU extension 2015-03-16"
+#define CFG_DEFAULT_LOGLEVEL Logger::Info
 
 /*
  * SERIAL CONFIGURATION
@@ -24,9 +25,9 @@
  * the same timer (out of a limited number of 9 timers).
  */
 #define CFG_TICK_INTERVAL_HEARTBEAT                 2000000
-#define CFG_TICK_INTERVAL_SYSTEM_IO                 200000
-#define CFG_TICK_INTERVAL_TEMPERATURE               1000000
-#define CFG_TICK_INTERVAL_EBERSPAECHER_HEATER       20000
+#define CFG_TICK_INTERVAL_TEMPERATURE               2000000
+#define CFG_TICK_INTERVAL_EBERSPAECHER_HEATER         20000
+#define CFG_TICK_INTERVAL_CAN_IO                     200000
 
 /*
  * CAN BUS CONFIGURATION
@@ -35,7 +36,7 @@
 #define CFG_CAN1_SPEED CAN_BPS_500K // specify the speed of the CAN1 bus (Car)
 #define CFG_CAN0_NUM_RX_MAILBOXES 7 // amount of CAN bus receive mailboxes for CAN0
 #define CFG_CAN1_NUM_RX_MAILBOXES 7 // amount of CAN bus receive mailboxes for CAN1
-#define CFG_CANTHROTTLE_MAX_NUM_LOST_MSG 3 // maximum number of lost messages allowed
+#define CFG_CAN_IO_MSG_TIMEOUT 1000 // milliseconds a can IO message may be missing before the device faults
 
 /*
  * HARD CODED PARAMETERS

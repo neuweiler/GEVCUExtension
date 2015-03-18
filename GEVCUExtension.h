@@ -13,6 +13,7 @@
 #include "Heartbeat.h"
 #include "Temperature.h"
 #include "EberspaecherHeater.h"
+#include "CanIO.h"
 
 #ifdef __cplusplus
 extern "C" {

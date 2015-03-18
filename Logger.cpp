@@ -5,7 +5,7 @@
 
 #include "Logger.h"
 
-Logger::LogLevel Logger::logLevel = Logger::Info;
+Logger::LogLevel Logger::logLevel = CFG_DEFAULT_LOGLEVEL;
 uint32_t Logger::lastLogTime = 0;
 
 /*
@@ -363,6 +363,18 @@ void Logger::printDeviceName(DeviceId deviceId)
 
         case HEARTBEAT:
             SerialUSB.print("HEARTBEAT");
+            break;
+
+        case EBERSPAECHER:
+            SerialUSB.print("EBERSPAECHER");
+            break;
+
+        case CAN_IO:
+            SerialUSB.print("CAN_IO");
+            break;
+
+        case TEMPERATURE:
+            SerialUSB.print("TEMPERATURE");
             break;
 
         case INVALID:
