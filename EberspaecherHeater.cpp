@@ -59,9 +59,9 @@ void EberspaecherHeater::sendControl()
 
     //TODO: implement preparation of control frame
 
-    if (Logger::isDebug()) {
-        Logger::debug(EBERSPAECHER, "requested power: %l", powerRequested);
-    }
+//    if (Logger::isDebug()) {
+//        Logger::debug(EBERSPAECHER, "requested power: %l", powerRequested);
+//    }
 
     canHandlerEv->sendFrame(outputFrame);
 }
