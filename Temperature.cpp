@@ -7,6 +7,7 @@
 
 Temperature::Temperature(): Device()
 {
+    canHandlerEv = CanHandler::getInstanceEV();
     commonName = "TemperatureProbe";
 }
 
@@ -16,7 +17,7 @@ void Temperature::setup()
 
     Device::setup(); //call base class
 
-    Logger::info("locating temperature sensors...");
+    Logger::info(TEMPERATURE, "locating temperature sensors...");
 
     TemperatureSensor::resetSearch();
     int i;
@@ -24,7 +25,7 @@ void Temperature::setup()
         devices[i] = TemperatureSensor::search();
         if (devices[i] == NULL)
             break;
-        Logger::info("found sensor #%d: addr=%X, %s", i, devices[i]->getAddress(), devices[i]->getTypeStr());
+        Logger::info(TEMPERATURE, "found sensor #%d: addr=%X, %s", i, devices[i]->getAddress(), devices[i]->getTypeStr());
     }
     devices[i] = NULL;
     TemperatureSensor::prepareData();
@@ -34,13 +35,20 @@ void Temperature::setup()
 
 void Temperature::handleTick()
 {
-    // read temperatures
+    canHandlerEv->prepareOutputFrame(&outputFrame, CAN_ID_GEVCU_EXT_TEMPERATURE);
+
+    // read temperatures and send them via CAN bus
     for (int i = 0; i < CFG_MAX_NUM_TEMPERATURE_SENSORS && devices[i] != NULL; i++) {
         devices[i]->retrieveData();
         if (Logger::isDebug()) {
-            Logger::debug("Sensor #%d: %f C", i, devices[i]->getTemperatureCelsius());
+            Logger::debug(TEMPERATURE, "sensor #%d: %f C", i, devices[i]->getTemperatureCelsius());
+        }
+        if (i < 8) {
+            outputFrame.data.byte[i] = constrain(round(devices[i]->getTemperatureCelsius()) + 50, 0, 255);
         }
     }
+    canHandlerEv->sendFrame(outputFrame);
+
     // calculate temperatures for next tick
     TemperatureSensor::prepareData();
 }
