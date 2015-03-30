@@ -8,8 +8,8 @@
 
 #include <due_can.h>
 
-#define CFG_VERSION "GEVCU extension 2015-03-16"
-#define CFG_DEFAULT_LOGLEVEL Logger::Info
+#define CFG_VERSION "GEVCU extension 2015-03-30"
+#define CFG_DEFAULT_LOGLEVEL Logger::Debug
 
 /*
  * SERIAL CONFIGURATION
@@ -26,7 +26,7 @@
  */
 #define CFG_TICK_INTERVAL_HEARTBEAT                 2000000
 #define CFG_TICK_INTERVAL_TEMPERATURE               2000000
-#define CFG_TICK_INTERVAL_EBERSPAECHER_HEATER         20000
+#define CFG_TICK_INTERVAL_EBERSPAECHER_HEATER        200000
 #define CFG_TICK_INTERVAL_CAN_IO                     200000
 
 /*
@@ -62,15 +62,28 @@
 #define CFG_DEV_MGR_MAX_DEVICES 20 // the maximum number of devices supported by the DeviceManager
 #define CFG_CAN_NUM_OBSERVERS 10 // maximum number of device subscriptions per CAN bus
 #define CFG_TIMER_NUM_OBSERVERS 9 // the maximum number of supported observers per timer
-#define CFG_TIMER_BUFFER_SIZE 100 // the size of the queuing buffer for TickHandler
+#define CFG_TIMER_BUFFER_SIZE 100 // the size of the queueing buffer for TickHandler
 #define CFG_SERIAL_SEND_BUFFER_SIZE 50
 #define CFG_MAX_NUM_TEMPERATURE_SENSORS 32
 
 /*
  * PIN ASSIGNMENT
  */
-#define CFG_IO_TEMPERATURE_SENSOR 24
-#define CFG_OUTPUT_NONE    255
-#define BLINK_LED          73 //13 is L, 73 is TX, 72 is RX
+#define CFG_OUTPUT_NONE             255
+#define CFG_BLINK_LED               73 //13 is L, 73 is TX, 72 is RX
+#define CFG_IO_TEMPERATURE_SENSOR   24
+#define CFG_IO_ENABLE_SIGNAL        30
+#define CFG_IO_PRE_CHARGE_RELAY     31
+#define CFG_IO_MAIN_CONTACTOR       32
+#define CFG_IO_SECONDAY_CONTACTOR   33
+#define CFG_IO_COOLING_PUMP         34
+#define CFG_IO_COOLING_FAN          35
+#define CFG_IO_BRAKE_LIGHT          36
+#define CFG_IO_REVERSE_LIGHT        37
+#define CFG_IO_ACTIVATE_CHARGER     38
+#define CFG_IO_BATTERY_HEATER       39
+#define CFG_IO_HEATING_PUMP         40
+#define CFG_IO_WARNING              44
+#define CFG_IO_POWER_LIMITATION     45
 
 #endif /* CONFIG_H_ */

@@ -27,9 +27,9 @@ void Heartbeat::handleTick() {
     }
 
     if (led) {
-        digitalWrite(BLINK_LED, HIGH);
+        digitalWrite(CFG_BLINK_LED, HIGH);
     } else {
-        digitalWrite(BLINK_LED, LOW);
+        digitalWrite(CFG_BLINK_LED, LOW);
     }
     led = !led;
 }

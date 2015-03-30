@@ -14,8 +14,8 @@ void createDevices() {
 }
 
 void setup() {
-    pinMode(BLINK_LED, OUTPUT);
-    digitalWrite(BLINK_LED, LOW);
+    pinMode(CFG_BLINK_LED, OUTPUT);
+    digitalWrite(CFG_BLINK_LED, LOW);
 
     SerialUSB.begin(CFG_SERIAL_SPEED);
 
