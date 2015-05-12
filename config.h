@@ -69,21 +69,29 @@
 /*
  * PIN ASSIGNMENT
  */
-#define CFG_OUTPUT_NONE             255
-#define CFG_BLINK_LED               73 //13 is L, 73 is TX, 72 is RX
-#define CFG_IO_TEMPERATURE_SENSOR   24
-#define CFG_IO_ENABLE_SIGNAL        30
-#define CFG_IO_PRE_CHARGE_RELAY     31
-#define CFG_IO_MAIN_CONTACTOR       32
-#define CFG_IO_SECONDAY_CONTACTOR   33
-#define CFG_IO_COOLING_PUMP         34
-#define CFG_IO_COOLING_FAN          35
-#define CFG_IO_BRAKE_LIGHT          36
-#define CFG_IO_REVERSE_LIGHT        37
-#define CFG_IO_ACTIVATE_CHARGER     38
-#define CFG_IO_BATTERY_HEATER       39
-#define CFG_IO_HEATING_PUMP         40
-#define CFG_IO_WARNING              44
-#define CFG_IO_POWER_LIMITATION     45
+#define CFG_OUTPUT_NONE                 255
+#define CFG_BLINK_LED                   13 //13 is L, 73 is TX, 72 is RX
+
+#define CFG_IO_TEMPERATURE_SENSOR       20
+
+#define CFG_IO_PRE_CHARGE_RELAY         22
+#define CFG_IO_MAIN_CONTACTOR           23
+#define CFG_IO_SECONDAY_CONTACTOR       24
+#define CFG_IO_FAST_CHARGE_CONTACTOR    25
+
+#define CFG_IO_ENABLE_MOTOR             26
+#define CFG_IO_ENABLE_CHARGER           27
+#define CFG_IO_ENABLE_DCDC              28
+#define CFG_IO_ENABLE_HEATER            29
+
+#define CFG_IO_HEATER_VALVE             30
+#define CFG_IO_HEATER_PUMP              31
+#define CFG_IO_COOLING_PUMP             32
+#define CFG_IO_COOLING_FAN              33
+
+#define CFG_IO_BRAKE_LIGHT              34
+#define CFG_IO_REVERSE_LIGHT            35
+#define CFG_IO_WARNING                  36
+#define CFG_IO_POWER_LIMITATION         37
 
 #endif /* CONFIG_H_ */

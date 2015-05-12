@@ -27,11 +27,6 @@ void Device::handleTick()
 {
 }
 
-uint32_t Device::getTickInterval()
-{
-    return 0;
-}
-
 void Device::handleMessage(uint32_t msgType, void* message)
 {
     switch (msgType) {

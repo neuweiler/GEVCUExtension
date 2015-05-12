@@ -26,7 +26,6 @@ public:
     virtual DeviceType getType();
     virtual DeviceId getId();
     void handleTick();
-    virtual uint32_t getTickInterval();
     char* getCommonName();
 
 protected:
