@@ -7,7 +7,7 @@
 
 EberspaecherHeater::EberspaecherHeater(): Device()
 {
-    canHandlerEv = CanHandler::getInstanceEV();
+    canHandlerCar = CanHandler::getInstanceCar();
 
     commonName = "Eberspächer Heater";
 }
@@ -19,8 +19,8 @@ void EberspaecherHeater::setup()
     Device::setup(); //call base class
 
     // register ourselves as observer of 0x... and 0x... can frames
-    canHandlerEv->attach(this, CAN_MASKED_ID_1, CAN_MASK_1, false);
-    canHandlerEv->attach(this, CAN_MASKED_ID_2, CAN_MASK_2, false);
+    canHandlerCar->attach(this, CAN_MASKED_ID_1, CAN_MASK_1, false);
+    canHandlerCar->attach(this, CAN_MASKED_ID_2, CAN_MASK_2, false);
 
     TickHandler::getInstance()->attach(this, CFG_TICK_INTERVAL_EBERSPAECHER_HEATER);
 }
@@ -55,7 +55,7 @@ void EberspaecherHeater::sendControl()
 {
     long powerRequested = 0;
 
-    canHandlerEv->prepareOutputFrame(&outputFrame, CAN_ID_CONTROL);
+  //  canHandlerCar->prepareOutputFrame(&outputFrame, CAN_ID_CONTROL);
 
     //TODO: implement preparation of control frame
 
@@ -63,7 +63,7 @@ void EberspaecherHeater::sendControl()
 //        Logger::debug(EBERSPAECHER, "requested power: %l", powerRequested);
 //    }
 
-    canHandlerEv->sendFrame(outputFrame);
+    canHandlerCar->sendFrame(outputFrame);
 }
 
 /*

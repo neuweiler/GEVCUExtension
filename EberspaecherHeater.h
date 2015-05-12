@@ -13,12 +13,13 @@
 #include "DeviceManager.h"
 
 // CAN bus id's for frames sent to the heater
-//TODO: define correct can ID's, mask and masked id's
 #define CAN_ID_WAKEUP       0x100 // wake up the device
-#define CAN_ID_CONTROL      0x640 // send commands
+#define CAN_ID_KEEP_ALIVE   0x621 // keep alive message
+#define CAN_ID_CONTROL      0x // send power conmtrol message
 
 // CAN bus id's for frames received from the heater
 
+//TODO: define correct can ID's, mask and masked id's
 #define CAN_ID_STATUS           0x258 // receive status message                  01001011000
 #define CAN_MASK_1              0x7cc // mask for above id's                     11111001100
 #define CAN_MASKED_ID_1         0x248 // masked id for id's from 0x258 to 0x268  01001001000
@@ -41,7 +42,7 @@ public:
 protected:
 
 private:
-    CanHandler *canHandlerEv;
+    CanHandler *canHandlerCar;
     CAN_FRAME outputFrame; // the output CAN frame;
 
     void sendControl();
