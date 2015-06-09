@@ -1,7 +1,7 @@
 /*
  * DeviceManager.h
  *
-*/
+ */
 
 #ifndef DEVICEMGR_H_
 #define DEVICEMGR_H_

@@ -5,13 +5,15 @@
 
 #include "Heartbeat.h"
 
-Heartbeat::Heartbeat() : Device() {
+Heartbeat::Heartbeat() : Device()
+{
     led = false;
     dotCount = 0;
     commonName = "Heartbeat";
 }
 
-void Heartbeat::setup() {
+void Heartbeat::setup()
+{
     TickHandler::getInstance()->detach(this);
 
     Device::setup(); //call base class
@@ -19,7 +21,8 @@ void Heartbeat::setup() {
     TickHandler::getInstance()->attach(this, CFG_TICK_INTERVAL_HEARTBEAT);
 }
 
-void Heartbeat::handleTick() {
+void Heartbeat::handleTick()
+{
     SerialUSB.print('.');
     // Print a dot if no other output has been made since the last tick
     if ((++dotCount % 80) == 0) {
@@ -34,7 +37,8 @@ void Heartbeat::handleTick() {
     led = !led;
 }
 
-DeviceId Heartbeat::getId() {
+DeviceId Heartbeat::getId()
+{
     return HEARTBEAT;
 }
 

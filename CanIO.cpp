@@ -8,7 +8,8 @@
 /**
  * Constructor to initialize class variables
  */
-CanIO::CanIO() : Device() {
+CanIO::CanIO() : Device()
+{
     lastReception = -1;
     faulted = false;
     passedPreCharging = false;
@@ -19,7 +20,8 @@ CanIO::CanIO() : Device() {
 /**
  * set-up the device
  */
-void CanIO::setup() {
+void CanIO::setup()
+{
     TickHandler::getInstance()->detach(this);
     Device::setup(); //call base class
 
@@ -55,14 +57,11 @@ void CanIO::setup() {
 /**
  * process a tick event from the timer the device is registered to.
  */
-void CanIO::handleTick() {
+void CanIO::handleTick()
+{
     // if CAN messages from GEVCU are missing, fault this device and disable everything
     if (millis() > lastReception + CFG_CAN_IO_MSG_TIMEOUT) {
         // in case the system's milli counter overflows, adapt to much lower values
-        if (millis() < 3000) {
-            lastReception = millis();
-            return;
-        }
         Logger::error(CAN_IO, "too many lost messages !");
         fault();
     }
@@ -71,7 +70,8 @@ void CanIO::handleTick() {
 /**
  * In case of an error, fault the device, reset all output and stop processing further I/O data via can
  */
-void CanIO::fault() {
+void CanIO::fault()
+{
     Logger::error(CAN_IO, "Faulting and resetting all output. Reset device to restart.");
 
     faulted = true;
@@ -83,7 +83,8 @@ void CanIO::fault() {
 /*
  * check if a pin is configured and initialize it for digital output
  */
-void CanIO::setPinMode(uint8_t pin) {
+void CanIO::setPinMode(uint8_t pin)
+{
     if (pin != CFG_OUTPUT_NONE) {
         pinMode(pin, OUTPUT);
     }
@@ -93,7 +94,8 @@ void CanIO::setPinMode(uint8_t pin) {
  * check if a pin is configured and set it to HIGH or LOW depending on the input
  * note: if the output is logically active, it has to be set to LOW
  */
-void CanIO::setOutput(uint8_t pin, bool active) {
+void CanIO::setOutput(uint8_t pin, bool active)
+{
     if (pin != CFG_OUTPUT_NONE) {
         digitalWrite(pin, (active && !faulted) ? LOW : HIGH);
     }
@@ -102,7 +104,8 @@ void CanIO::setOutput(uint8_t pin, bool active) {
 /**
  * deactivate all output signals
  */
-void CanIO::resetOutput() {
+void CanIO::resetOutput()
+{
     setOutput(CFG_IO_PRE_CHARGE_RELAY, false);
     setOutput(CFG_IO_MAIN_CONTACTOR, false);
     setOutput(CFG_IO_SECONDAY_CONTACTOR, false);
@@ -131,7 +134,8 @@ void CanIO::resetOutput() {
  * this method is called. Depending on the ID of the CAN message, the data of
  * the incoming message is processed.
  */
-void CanIO::handleCanFrame(CAN_FRAME *frame) {
+void CanIO::handleCanFrame(CAN_FRAME *frame)
+{
     if (faulted) {
         return;
     }
@@ -152,7 +156,8 @@ void CanIO::handleCanFrame(CAN_FRAME *frame) {
  * Process a status message which was received from the GEVCU
  * and set I/O accordingly
  */
-void CanIO::processGevcuStatus(uint8_t data[]) {
+void CanIO::processGevcuStatus(uint8_t data[])
+{
     uint8_t state = data[4];
     switch (state) {
     case startup:
@@ -163,10 +168,10 @@ void CanIO::processGevcuStatus(uint8_t data[]) {
         break;
     case preCharge:
         Logger::info(CAN_IO, "state: preCharge");
-        passedPreCharging = true;
         break;
     case preCharged:
         Logger::info(CAN_IO, "state: preCharged");
+        passedPreCharging = true;
         break;
     case batteryHeating:
         Logger::info(CAN_IO, "state: batteryHeating");
@@ -191,10 +196,11 @@ void CanIO::processGevcuStatus(uint8_t data[]) {
 
     // make sure that a power cycle or reset of the extension only does not skip the pre-charge cycle
     // this would be potentially dangerous, so this device will fault
-    if (!passedPreCharging && (state > preCharge) && !faulted) {
-    	Logger::error(CAN_IO, "GEVCU reports its status is higher than 'preCharge' but extension did not pass pre-charge cycle");
-    	fault();
-    	return;
+    if ((!passedPreCharging && (state > preCharge)) || (passedPreCharging && (state < preCharged)) && !faulted) {
+        Logger::error(CAN_IO, "Status reported by GEVCU does not match state of extension (GEVCU: %d, ext. passed pre-charge: %T)", state,
+                passedPreCharging);
+        fault();
+        return;
     }
 
     uint16_t logicIO = (data[3] << 0) | (data[2] << 8);
@@ -221,24 +227,31 @@ void CanIO::processGevcuStatus(uint8_t data[]) {
     setOutput(CFG_IO_POWER_LIMITATION, logicIO & powerLimitation);
 
     if (Logger::isDebug()) {
-        Logger::debug(CAN_IO, "pre-charge: %t, main cont: %t, sec cont: %t, fast charge: %t", logicIO & preChargeRelay, logicIO & mainContactor, logicIO & secondaryContactor, logicIO & fastChargeContactor);
-        Logger::debug(CAN_IO, "enable motor: %t, enable charger: %t, enable DCDC: %t, enable heater: %t", logicIO & enableMotor, logicIO & enableCharger, logicIO & enableDcDc, logicIO & enableHeater);
-        Logger::debug(CAN_IO, "heater valve: %t, heater pump: %t, cooling pump: %t, cooling fan: %t", logicIO & heaterValve, logicIO & heaterPump, logicIO & coolingPump, logicIO & coolingFan);
-        Logger::debug(CAN_IO, "brake: %t, reverse: %t, warning: %t, power limit: %t", logicIO & brakeLight, logicIO & reverseLight, logicIO & warning, logicIO & powerLimitation);
+        Logger::debug(CAN_IO, "pre-charge: %t, main cont: %t, sec cont: %t, fast charge: %t", logicIO & preChargeRelay, logicIO & mainContactor,
+                logicIO & secondaryContactor, logicIO & fastChargeContactor);
+        Logger::debug(CAN_IO, "enable motor: %t, enable charger: %t, enable DCDC: %t, enable heater: %t", logicIO & enableMotor,
+                logicIO & enableCharger, logicIO & enableDcDc, logicIO & enableHeater);
+        Logger::debug(CAN_IO, "heater valve: %t, heater pump: %t, cooling pump: %t, cooling fan: %t", logicIO & heaterValve, logicIO & heaterPump,
+                logicIO & coolingPump, logicIO & coolingFan);
+        Logger::debug(CAN_IO, "brake: %t, reverse: %t, warning: %t, power limit: %t", logicIO & brakeLight, logicIO & reverseLight, logicIO & warning,
+                logicIO & powerLimitation);
     }
 }
 
 /*
  * process a status message which was received from the heater.
  */
-void CanIO::processGevcuAnalogIO(uint8_t data[]) {
+void CanIO::processGevcuAnalogIO(uint8_t data[])
+{
     //TODO: implement processing of bits and bytes
 }
 
-DeviceType CanIO::getType() {
+DeviceType CanIO::getType()
+{
     return DEVICE_IO;
 }
 
-DeviceId CanIO::getId() {
+DeviceId CanIO::getId()
+{
     return CAN_IO;
 }

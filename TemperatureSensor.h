@@ -12,11 +12,9 @@
 class TemperatureSensor
 {
 public:
-    enum DeviceType {
-        UNKNOWN,
-        DS18S20,
-		DS18B20,
-		DS1822
+    enum DeviceType
+    {
+        UNKNOWN, DS18S20, DS18B20, DS1822
     };
 
     TemperatureSensor(byte address[]);

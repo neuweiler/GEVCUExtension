@@ -5,11 +5,11 @@
 
 #include "EberspaecherHeater.h"
 
-EberspaecherHeater::EberspaecherHeater(): Device()
+EberspaecherHeater::EberspaecherHeater() : Device()
 {
     canHandlerCar = CanHandler::getInstanceCar();
 
-    commonName = "Eberspächer Heater";
+    commonName = "Eberspï¿½cher Heater";
 }
 
 void EberspaecherHeater::setup()
@@ -40,9 +40,9 @@ void EberspaecherHeater::handleTick()
 void EberspaecherHeater::handleCanFrame(CAN_FRAME *frame)
 {
     switch (frame->id) {
-        case CAN_ID_STATUS:
-            processStatus(frame->data.bytes);
-            break;
+    case CAN_ID_STATUS:
+        processStatus(frame->data.bytes);
+        break;
     }
 }
 
@@ -55,7 +55,7 @@ void EberspaecherHeater::sendControl()
 {
     long powerRequested = 0;
 
-  //  canHandlerCar->prepareOutputFrame(&outputFrame, CAN_ID_CONTROL);
+    //  canHandlerCar->prepareOutputFrame(&outputFrame, CAN_ID_CONTROL);
 
     //TODO: implement preparation of control frame
 
@@ -79,7 +79,6 @@ DeviceType EberspaecherHeater::getType()
 {
     return DEVICE_HEATER;
 }
-
 
 DeviceId EberspaecherHeater::getId()
 {

@@ -4,7 +4,8 @@ CanHandler *canHandlerEV;
 CanHandler *canHandlerCar;
 TickHandler *tickHandler;
 
-void createDevices() {
+void createDevices()
+{
     DeviceManager *deviceManager = DeviceManager::getInstance();
 
     deviceManager->addDevice(new Heartbeat());
@@ -13,7 +14,8 @@ void createDevices() {
     deviceManager->addDevice(new CanIO());
 }
 
-void setup() {
+void setup()
+{
     pinMode(CFG_BLINK_LED, OUTPUT);
     digitalWrite(CFG_BLINK_LED, LOW);
 
@@ -30,7 +32,8 @@ void setup() {
     DeviceManager::getInstance()->sendMessage(DEVICE_ANY, INVALID, MSG_STARTUP, NULL);
 }
 
-void loop() {
+void loop()
+{
     tickHandler->process();
     canHandlerEV->process();
     canHandlerCar->process();

@@ -60,15 +60,15 @@
 	<variableList>
 		<variable>
 			<name>ArduinoHardwareLibPath</name>
-			<value>file:/C:/data/development/arduino/arduino-1.5.6-r2/hardware/arduino/sam/libraries</value>
+			<value>file:/data/develpoment/arduino/arduino-1.6.1/hardware/arduino/sam/libraries</value>
 		</variable>
 		<variable>
 			<name>ArduinoPinPath</name>
-			<value>file:/C:/data/development/arduino/arduino-1.5.6-r2/hardware/arduino/sam/variants</value>
+			<value>file:/data/develpoment/arduino/arduino-1.6.1/hardware/arduino/sam/variants</value>
 		</variable>
 		<variable>
 			<name>ArduinoPlatformPath</name>
-			<value>file:/C:/data/development/arduino/arduino-1.5.6-r2/hardware/arduino/sam</value>
+			<value>file:/data/develpoment/arduino/arduino-1.6.1/hardware/arduino/sam</value>
 		</variable>
 	</variableList>
 </projectDescription>

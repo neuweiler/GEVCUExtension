@@ -21,6 +21,7 @@ class Device: public TickObserver
 {
 public:
     Device();
+    virtual ~Device();
     virtual void setup();
     virtual void handleMessage(uint32_t, void*);
     virtual DeviceType getType();

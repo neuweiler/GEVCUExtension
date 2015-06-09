@@ -12,6 +12,10 @@ Device::Device()
     commonName = "Generic Device";
 }
 
+Device::~Device()
+{
+}
+
 //Empty functions to handle these callbacks if the derived classes don't
 
 void Device::setup()
@@ -30,9 +34,9 @@ void Device::handleTick()
 void Device::handleMessage(uint32_t msgType, void* message)
 {
     switch (msgType) {
-        case MSG_STARTUP:
-            this->setup();
-            break;
+    case MSG_STARTUP:
+        this->setup();
+        break;
     }
 }
 

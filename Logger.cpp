@@ -213,21 +213,21 @@ void Logger::log(DeviceId deviceId, LogLevel level, char *format, va_list args)
     SerialUSB.print(" - ");
 
     switch (level) {
-        case Debug:
-            SerialUSB.print("DEBUG");
-            break;
+    case Debug:
+        SerialUSB.print("DEBUG");
+        break;
 
-        case Info:
-            SerialUSB.print("INFO");
-            break;
+    case Info:
+        SerialUSB.print("INFO");
+        break;
 
-        case Warn:
-            SerialUSB.print("WARNING");
-            break;
+    case Warn:
+        SerialUSB.print("WARNING");
+        break;
 
-        case Error:
-            SerialUSB.print("ERROR");
-            break;
+    case Error:
+        SerialUSB.print("ERROR");
+        break;
     }
 
     SerialUSB.print(": ");
@@ -357,28 +357,28 @@ void Logger::logMessage(char *format, va_list args)
 void Logger::printDeviceName(DeviceId deviceId)
 {
     switch (deviceId) {
-        case SYSTEM:
-            SerialUSB.print("SYSTEM");
-            break;
+    case SYSTEM:
+        SerialUSB.print("SYSTEM");
+        break;
 
-        case HEARTBEAT:
-            SerialUSB.print("HEARTBEAT");
-            break;
+    case HEARTBEAT:
+        SerialUSB.print("HEARTBEAT");
+        break;
 
-        case EBERSPAECHER:
-            SerialUSB.print("EBERSPAECHER");
-            break;
+    case EBERSPAECHER:
+        SerialUSB.print("EBERSPAECHER");
+        break;
 
-        case CAN_IO:
-            SerialUSB.print("CAN_IO");
-            break;
+    case CAN_IO:
+        SerialUSB.print("CAN_IO");
+        break;
 
-        case TEMPERATURE:
-            SerialUSB.print("TEMPERATURE");
-            break;
+    case TEMPERATURE:
+        SerialUSB.print("TEMPERATURE");
+        break;
 
-        case INVALID:
-            SerialUSB.print("invalid");
+    case INVALID:
+        SerialUSB.print("invalid");
     }
     SerialUSB.print(" - ");
 }

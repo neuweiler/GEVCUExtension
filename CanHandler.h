@@ -21,7 +21,8 @@ public:
 class CanHandler
 {
 public:
-    enum CanBusNode {
+    enum CanBusNode
+    {
         CAN_BUS_EV, // CAN0 is intended to be connected to the EV bus (controller, charger, etc.)
         CAN_BUS_CAR // CAN1 is intended to be connected to the car's high speed bus (the one with the ECU)
     };
@@ -37,7 +38,8 @@ public:
 protected:
 
 private:
-    struct CanObserverData {
+    struct CanObserverData
+    {
         uint32_t id;    // what id to listen to
         uint32_t mask;  // the CAN frame mask to listen to
         bool extended;  // are extended frames expected

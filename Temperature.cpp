@@ -5,7 +5,7 @@
 
 #include "Temperature.h"
 
-Temperature::Temperature(): Device()
+Temperature::Temperature() : Device()
 {
     canHandlerEv = CanHandler::getInstanceEV();
     commonName = "TemperatureProbe";
@@ -58,13 +58,13 @@ DeviceType Temperature::getType()
     return DEVICE_SENSOR;
 }
 
-
 DeviceId Temperature::getId()
 {
     return TEMPERATURE;
 }
 
-float Temperature::getMinimum() {
+float Temperature::getMinimum()
+{
     float minimum = 999.0;
 
     for (int i = 0; i < CFG_MAX_NUM_TEMPERATURE_SENSORS && devices[i] != NULL; i++) {
@@ -76,7 +76,8 @@ float Temperature::getMinimum() {
     return minimum;
 }
 
-float Temperature::getMaximum() {
+float Temperature::getMaximum()
+{
     float maximum = -999.0;
 
     for (int i = 0; i < CFG_MAX_NUM_TEMPERATURE_SENSORS && devices[i] != NULL; i++) {

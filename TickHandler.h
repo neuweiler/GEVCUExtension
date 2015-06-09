@@ -17,7 +17,6 @@ public:
     virtual void handleTick();
 };
 
-
 class TickHandler
 {
 public:
@@ -31,7 +30,8 @@ public:
 protected:
 
 private:
-    struct TimerEntry {
+    struct TimerEntry
+    {
         long interval; // interval of timer
         TickObserver *observer[CFG_TIMER_NUM_OBSERVERS]; // array of pointers to observers with this interval
     };

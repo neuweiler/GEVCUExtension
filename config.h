@@ -79,10 +79,10 @@
 #define CFG_IO_SECONDAY_CONTACTOR       24
 #define CFG_IO_FAST_CHARGE_CONTACTOR    25
 
-#define CFG_IO_ENABLE_MOTOR             26
+#define CFG_IO_ENABLE_MOTOR             29
 #define CFG_IO_ENABLE_CHARGER           27
 #define CFG_IO_ENABLE_DCDC              28
-#define CFG_IO_ENABLE_HEATER            29
+#define CFG_IO_ENABLE_HEATER            26
 
 #define CFG_IO_HEATER_VALVE             30
 #define CFG_IO_HEATER_PUMP              31
