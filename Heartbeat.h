@@ -11,7 +11,8 @@
 #include "TickHandler.h"
 #include "DeviceManager.h"
 
-class Heartbeat: public Device {
+class Heartbeat: public Device
+{
 public:
     Heartbeat();
     void setup();

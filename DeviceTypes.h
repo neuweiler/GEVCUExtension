@@ -6,7 +6,8 @@
 #ifndef DEVICE_TYPES_H_
 #define DEVICE_TYPES_H_
 
-enum DeviceType {
+enum DeviceType
+{
     DEVICE_ANY,
     DEVICE_SENSOR,
     DEVICE_HEATER,
@@ -14,7 +15,8 @@ enum DeviceType {
     DEVICE_NONE
 };
 
-enum DeviceId { //unique device ID for every piece of hardware possible
+enum DeviceId
+{ //unique device ID for every piece of hardware possible
     SYSTEM = 0x5000,
     HEARTBEAT = 0x5001,
     EBERSPAECHER = 0x6000,

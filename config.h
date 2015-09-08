@@ -26,16 +26,16 @@
  */
 #define CFG_TICK_INTERVAL_HEARTBEAT                 2000000
 #define CFG_TICK_INTERVAL_TEMPERATURE               2000000
-#define CFG_TICK_INTERVAL_EBERSPAECHER_HEATER        200000
+#define CFG_TICK_INTERVAL_EBERSPAECHER_HEATER         60000
 #define CFG_TICK_INTERVAL_CAN_IO                     200000
 
 /*
  * CAN BUS CONFIGURATION
  */
 #define CFG_CAN0_SPEED CAN_BPS_500K // specify the speed of the CAN0 bus (EV)
-#define CFG_CAN1_SPEED CAN_BPS_500K // specify the speed of the CAN1 bus (Car)
-#define CFG_CAN0_NUM_RX_MAILBOXES 7 // amount of CAN bus receive mailboxes for CAN0
-#define CFG_CAN1_NUM_RX_MAILBOXES 7 // amount of CAN bus receive mailboxes for CAN1
+#define CFG_CAN1_SPEED CAN_BPS_33333 // specify the speed of the CAN1 bus (Car)
+#define CFG_CAN0_NUM_TX_MAILBOXES 3 // how many of 8 mailboxes are used for TX for CAN0, rest is used for RX
+#define CFG_CAN1_NUM_TX_MAILBOXES 5 // how many of 8 mailboxes are used for TX for CAN1, rest is used for RX
 #define CFG_CAN_IO_MSG_TIMEOUT 1000 // milliseconds a can IO message may be missing before the device faults
 
 /*

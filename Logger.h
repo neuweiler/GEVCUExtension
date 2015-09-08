@@ -11,10 +11,16 @@
 #include "DeviceTypes.h"
 #include "constants.h"
 
-class Logger {
+class Logger
+{
 public:
-    enum LogLevel {
-        Debug = 0, Info = 1, Warn = 2, Error = 3, Off = 4
+    enum LogLevel
+    {
+        Debug = 0,
+        Info = 1,
+        Warn = 2,
+        Error = 3,
+        Off = 4
     };
     static void debug(char *, ...);
     static void debug(DeviceId, char *, ...);

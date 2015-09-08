@@ -27,12 +27,13 @@ public:
         CAN_BUS_CAR // CAN1 is intended to be connected to the car's high speed bus (the one with the ECU)
     };
 
-    void initialize();
+    void setup();
     void attach(CanObserver *observer, uint32_t id, uint32_t mask, bool extended);
     void detach(CanObserver *observer, uint32_t id, uint32_t mask);
     void process();
     void prepareOutputFrame(CAN_FRAME *frame, uint32_t id);
     void sendFrame(CAN_FRAME& frame);
+    void logFrame(CAN_FRAME& frame);
     static CanHandler *getInstanceCar();
     static CanHandler *getInstanceEV();
 protected:
@@ -54,7 +55,6 @@ private:
     CanObserverData observerData[CFG_CAN_NUM_OBSERVERS];    // Can observers
 
     CanHandler(CanBusNode busNumber);
-    void logFrame(CAN_FRAME& frame);
     int8_t findFreeObserverData();
     int8_t findFreeMailbox();
 };

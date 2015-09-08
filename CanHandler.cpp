@@ -63,14 +63,11 @@ CanHandler* CanHandler::getInstanceCar()
 /*
  * Initialization of the CAN bus
  */
-void CanHandler::initialize()
+void CanHandler::setup()
 {
     // Initialize the canbus at the specified baudrate
     bus->init(canBusNode == CAN_BUS_EV ? CFG_CAN0_SPEED : CFG_CAN1_SPEED);
-
-    //Mailboxes are default set up initialized with one MB for TX and the rest for RX
-    //That's OK with us so no need to initialize those things there.
-
+    bus->setNumTXBoxes(canBusNode == CAN_BUS_EV ? CFG_CAN0_NUM_TX_MAILBOXES : CFG_CAN1_NUM_TX_MAILBOXES);
     Logger::info("CAN%d init ok", (canBusNode == CAN_BUS_EV ? 0 : 1));
 }
 
@@ -166,7 +163,7 @@ int8_t CanHandler::findFreeObserverData()
  */
 int8_t CanHandler::findFreeMailbox()
 {
-    uint8_t numRxMailboxes = (canBusNode == CAN_BUS_EV ? CFG_CAN0_NUM_RX_MAILBOXES : CFG_CAN1_NUM_RX_MAILBOXES);
+    uint8_t numRxMailboxes = 8 - (canBusNode == CAN_BUS_EV ? CFG_CAN0_NUM_TX_MAILBOXES : CFG_CAN1_NUM_TX_MAILBOXES);
 
     for (uint8_t i = 0; i < numRxMailboxes; i++) {
         bool used = false;
@@ -217,15 +214,7 @@ void CanHandler::prepareOutputFrame(CAN_FRAME *frame, uint32_t id)
     frame->id = id;
     frame->extended = 0;
     frame->rtr = 0;
-
-    frame->data.bytes[0] = 0;
-    frame->data.bytes[1] = 0;
-    frame->data.bytes[2] = 0;
-    frame->data.bytes[3] = 0;
-    frame->data.bytes[4] = 0;
-    frame->data.bytes[5] = 0;
-    frame->data.bytes[6] = 0;
-    frame->data.bytes[7] = 0;
+    frame->data.value = 0;
 }
 
 //Allow the canbus driver to figure out the proper mailbox to use

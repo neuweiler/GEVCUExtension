@@ -25,8 +25,8 @@ void setup()
 
     canHandlerEV = CanHandler::getInstanceEV();
     canHandlerCar = CanHandler::getInstanceCar();
-    canHandlerEV->initialize();
-    canHandlerCar->initialize();
+    canHandlerEV->setup();
+    canHandlerCar->setup();
 
     createDevices();
     DeviceManager::getInstance()->sendMessage(DEVICE_ANY, INVALID, MSG_STARTUP, NULL);

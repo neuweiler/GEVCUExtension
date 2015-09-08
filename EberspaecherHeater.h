@@ -15,7 +15,12 @@
 // CAN bus id's for frames sent to the heater
 #define CAN_ID_WAKEUP       0x100 // wake up the device
 #define CAN_ID_KEEP_ALIVE   0x621 // keep alive message
-#define CAN_ID_CONTROL      0x // send power conmtrol message
+#define CAN_ID_CONTROL      0x10720099 // send power conmtrol message
+#define CAN_ID_CMD1 0x13FFE060 // dummy message
+#define CAN_ID_CMD2 0x102CC040 // dummy message
+#define CAN_ID_CMD3 0x10242040 // dummy message
+#define CAN_ID_CMD4 0x102740CB // dummy message
+#define CAN_ID_CMD5 0x102740CB // dummy message
 
 // CAN bus id's for frames received from the heater
 
@@ -43,10 +48,17 @@ protected:
 
 private:
     CanHandler *canHandlerCar;
-    CAN_FRAME outputFrame; // the output CAN frame;
+    CAN_FRAME frameControl; // frame to send control messages
+    CAN_FRAME frameKeepAlive; // frame to send heart beat
+    CAN_FRAME frameCmd1; // frame to send cmd1 message
+    CAN_FRAME frameCmd2; // frame to send cmd2 message
+    CAN_FRAME frameCmd3; // frame to send cmd3 message
+    CAN_FRAME frameCmd4; // frame to send cmd4 message
+    CAN_FRAME frameCmd5; // frame to send cmd5 message
 
     void sendControl();
-
+    void sendWakeup();
+    void prepareFrames();
 };
 
 #endif /* EBERSPAECHERHEATER_H_ */

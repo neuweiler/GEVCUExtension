@@ -1,13 +1,13 @@
 /*
  * Sys_Messages.h
  *
-*/
+ */
 
 #ifndef SYSMSG_H_
 #define SYSMSG_H_
 
-
-enum SystemMessage {
+enum SystemMessage
+{
     MSG_STARTUP = 0x3000,
     MSG_SOFT_FAULT = 0x3100,
     MSG_HARD_FAULT = 0x3150,
