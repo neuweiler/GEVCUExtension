@@ -1,6 +1,27 @@
 /*
  * CanIO.c
  *
+ Copyright (c) 2013 Collin Kidder, Michael Neuweiler, Charles Galpin
+
+ Permission is hereby granted, free of charge, to any person obtaining
+ a copy of this software and associated documentation files (the
+ "Software"), to deal in the Software without restriction, including
+ without limitation the rights to use, copy, modify, merge, publish,
+ distribute, sublicense, and/or sell copies of the Software, and to
+ permit persons to whom the Software is furnished to do so, subject to
+ the following conditions:
+
+ The above copyright notice and this permission notice shall be included
+ in all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
  */
 
 #include "CanIO.h"
@@ -11,9 +32,6 @@
 CanIO::CanIO() : Device()
 {
     lastReception = -1;
-    faulted = false;
-    passedPreCharging = false;
-    canHandlerEv = CanHandler::getInstanceEV();
     commonName = "Can I/O";
 }
 
@@ -22,10 +40,10 @@ CanIO::CanIO() : Device()
  */
 void CanIO::setup()
 {
-    TickHandler::getInstance()->detach(this);
     Device::setup(); //call base class
 
-    resetOutput();
+    resetOutput(); // safety: make sure no output is activated when setting the pin mode
+
     // initialize digital output
     setPinMode(CFG_IO_PRE_CHARGE_RELAY);
     setPinMode(CFG_IO_MAIN_CONTACTOR);
@@ -46,12 +64,24 @@ void CanIO::setup()
     setPinMode(CFG_IO_REVERSE_LIGHT);
     setPinMode(CFG_IO_WARNING);
     setPinMode(CFG_IO_POWER_LIMITATION);
-    resetOutput();
+    resetOutput(); // safety: to be 100% sure no relay pulls by accident, reset the output again
 
-    // register ourselves as observer of can frames
-    canHandlerEv->attach(this, CAN_MASKED_ID, CAN_MASK, false);
+    ready = true;
+    powerOn = true;
 
-    TickHandler::getInstance()->attach(this, CFG_TICK_INTERVAL_CAN_IO);
+    canHandlerEv.attach(this, CAN_MASKED_ID, CAN_MASK, false);
+    tickHandler.attach(this, CFG_TICK_INTERVAL_CAN_IO);
+}
+
+/**
+ * Tear down the device in a safe way.
+ */
+void CanIO::tearDown()
+{
+    Device::tearDown();
+    canHandlerEv.detach(this, CAN_MASKED_ID, CAN_MASK);
+
+    resetOutput(); // safety: release all output signals
 }
 
 /**
@@ -59,25 +89,11 @@ void CanIO::setup()
  */
 void CanIO::handleTick()
 {
-    // if CAN messages from GEVCU are missing, fault this device and disable everything
+    // safety: if CAN messages from GEVCU are missing, fault the system
     if (millis() > lastReception + CFG_CAN_IO_MSG_TIMEOUT) {
-        // in case the system's milli counter overflows, adapt to much lower values
         Logger::error(CAN_IO, "too many lost messages !");
-        fault();
+        status.setSystemState(Status::error);
     }
-}
-
-/**
- * In case of an error, fault the device, reset all output and stop processing further I/O data via can
- */
-void CanIO::fault()
-{
-    Logger::error(CAN_IO, "Faulting and resetting all output. Reset device to restart.");
-
-    faulted = true;
-    resetOutput();
-    canHandlerEv->detach(this, CAN_MASKED_ID, CAN_MASK);
-    TickHandler::getInstance()->detach(this);
 }
 
 /*
@@ -97,7 +113,7 @@ void CanIO::setPinMode(uint8_t pin)
 void CanIO::setOutput(uint8_t pin, bool active)
 {
     if (pin != CFG_OUTPUT_NONE) {
-        digitalWrite(pin, (active && !faulted) ? LOW : HIGH);
+        digitalWrite(pin, (active && status.getSystemState() != Status::error) ? LOW : HIGH);
     }
 }
 
@@ -129,20 +145,19 @@ void CanIO::resetOutput()
 
 /*
  * Processes an event from the CanHandler.
- *
- * In case a CAN message was received which pass the masking and id filtering,
- * this method is called. Depending on the ID of the CAN message, the data of
- * the incoming message is processed.
  */
 void CanIO::handleCanFrame(CAN_FRAME *frame)
 {
-    if (faulted) {
+    // safety: do not process any input when error occurred or device is not flagged
+    // as powered on, this should prevent triggering any output
+    if (status.getSystemState() == Status::error || !powerOn) {
         return;
     }
 
     switch (frame->id) {
     case CAN_ID_GEVCU_STATUS:
         processGevcuStatus(frame->data.bytes);
+        running = true;
         lastReception = millis();
         break;
 
@@ -154,54 +169,13 @@ void CanIO::handleCanFrame(CAN_FRAME *frame)
 
 /*
  * Process a status message which was received from the GEVCU
- * and set I/O accordingly
+ * and set system state and I/O accordingly
  */
 void CanIO::processGevcuStatus(uint8_t data[])
 {
-    uint8_t state = data[4];
-    switch (state) {
-    case startup:
-        Logger::info(CAN_IO, "state: startup");
-        break;
-    case init:
-        Logger::info(CAN_IO, "state: init");
-        break;
-    case preCharge:
-        Logger::info(CAN_IO, "state: preCharge");
-        break;
-    case preCharged:
-        Logger::info(CAN_IO, "state: preCharged");
-        passedPreCharging = true;
-        break;
-    case batteryHeating:
-        Logger::info(CAN_IO, "state: batteryHeating");
-        break;
-    case charging:
-        Logger::info(CAN_IO, "state: charging");
-        break;
-    case charged:
-        Logger::info(CAN_IO, "state: charged");
-        break;
-    case ready:
-        Logger::info(CAN_IO, "state: ready");
-        break;
-    case running:
-        Logger::info(CAN_IO, "state: running");
-        break;
-    case error:
-        Logger::error(CAN_IO, "state: error");
-        fault();
-        break;
-    }
-
-    // make sure that a power cycle or reset of the extension only does not skip the pre-charge cycle
-    // this would be potentially dangerous, so this device will fault
-    if ((!passedPreCharging && (state > preCharge)) || (passedPreCharging && (state < preCharged)) && !faulted) {
-        Logger::error(CAN_IO, "Status reported by GEVCU does not match state of extension (GEVCU: %d, ext. passed pre-charge: %T)", state,
-                passedPreCharging);
-        fault();
-        return;
-    }
+    // safety: set the system state, a error will cause a call of tearDown()
+    // and prevent any activation of outputs.
+    status.setSystemState((Status::SystemState) data[4]);
 
     uint16_t logicIO = (data[3] << 0) | (data[2] << 8);
     uint8_t status = data[5];
@@ -239,7 +213,7 @@ void CanIO::processGevcuStatus(uint8_t data[])
 }
 
 /*
- * process a status message which was received from the heater.
+ * process a status message which was received e.g. from the heater's temperature sensor.
  */
 void CanIO::processGevcuAnalogIO(uint8_t data[])
 {
@@ -254,4 +228,52 @@ DeviceType CanIO::getType()
 DeviceId CanIO::getId()
 {
     return CAN_IO;
+}
+
+/*
+ * Load configuration data from EEPROM.
+ *
+ * If not available or the checksum is invalid, default values are chosen.
+ */
+void CanIO::loadConfiguration()
+{
+    CanIOConfiguration *config = (CanIOConfiguration *) getConfiguration();
+
+    if (!config) { // as lowest sub-class make sure we have a config object
+        config = new CanIOConfiguration();
+        setConfiguration(config);
+    }
+
+    Device::loadConfiguration(); // call parent
+
+#ifdef USE_HARD_CODED
+
+    if (false) {
+#else
+    if (prefsHandler->checksumValid()) { //checksum is good, read in the values stored in EEPROM
+#endif
+        uint8_t temp;
+        prefsHandler->read(EECAN_xxx, &config->xxx);
+        prefsHandler->read(EECAN_yyy, &temp);
+        config->yyy = (temp != 0);
+    } else { //checksum invalid, reinitialize values and store to EEPROM
+        config->xxx = 0;
+        config->yyy = false;
+        saveConfiguration();
+    }
+    Logger::info(CAN_IO, "xxx: %d, yyy: %B", config->xxx, config->yyy);
+}
+
+/*
+ * Store the current configuration parameters to EEPROM.
+ */
+void CanIO::saveConfiguration()
+{
+    CanIOConfiguration *config = (CanIOConfiguration *) getConfiguration();
+
+    Device::saveConfiguration(); // call parent
+
+    prefsHandler->write(EECAN_xxx, config->xxx);
+    prefsHandler->write(EECAN_yyy, (uint8_t) (config->yyy ? 1 : 0));
+    prefsHandler->saveChecksum();
 }

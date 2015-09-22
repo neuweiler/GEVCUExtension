@@ -1,6 +1,27 @@
 /*
  * CanIO.h
  *
+Copyright (c) 2013 Collin Kidder, Michael Neuweiler, Charles Galpin
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
  */
 
 #ifndef CANIO_H_
@@ -23,6 +44,13 @@
 #define CAN_ID_GEVCU_ANALOG_IO  0x725 // receive status message                  11100100101
 #define CAN_MASK                0x7fe // mask for above id's                     11111111110
 #define CAN_MASKED_ID           0x724 // masked id for id's from 0x258 to 0x268  11100100100
+
+class CanIOConfiguration : public DeviceConfiguration
+{
+public:
+    uint16_t xxx; // in W
+    bool yyy; // flag ...
+};
 
 class CanIO: public Device, CanObserver
 {
@@ -70,40 +98,24 @@ public:
         powerLimitation = 1 << 15  // 0x8000, data[2], Motorola bit 0
     };
 
-    // The value is composed of a 1 byte integer value (not a bitfield): data[4]
-    enum GEVCU_State
-    {
-        startup = 0, // at start-up the system state is unknown
-        init = 1, // the system is being initialized
-        preCharge = 2, // the system is executing the pre-charge cycle
-        preCharged = 3, // the pre-charge cycle is finished
-        batteryHeating = 4, // before charging, heat the batteries
-        charging = 5, // the batteries are being charged
-        charged = 6, // the charging is finished
-        ready = 7, // the system is ready to accept commands but the motor controller's power stage is inactive
-        running = 8, // the system is running and the power stage of the motor controller is active
-        error = 99
-    };
-
     CanIO();
     void setup();
+    void tearDown();
     void handleTick();
     void handleCanFrame(CAN_FRAME *frame);
     void processGevcuStatus(uint8_t data[]);
     void processGevcuAnalogIO(uint8_t data[]);
     DeviceId getId();
     DeviceType getType();
+    void loadConfiguration();
+    void saveConfiguration();
 
 protected:
 
 private:
-    bool faulted;
-    bool passedPreCharging;
     long lastReception;
-    CanHandler *canHandlerEv;
     CAN_FRAME outputFrame; // the output CAN frame;
 
-    void fault();
     void resetOutput();
     void setPinMode(uint8_t pin);
     void setOutput(uint8_t pin, bool value);
