@@ -5,16 +5,19 @@
 
 #include "Temperature.h"
 
+/**
+ * Constructor to initialize class variables
+ */
 Temperature::Temperature() : Device()
 {
-    canHandlerEv = CanHandler::getInstanceEV();
     commonName = "TemperatureProbe";
 }
 
+/**
+ * set-up the device
+ */
 void Temperature::setup()
 {
-    TickHandler::getInstance()->detach(this);
-
     Device::setup(); //call base class
 
     Logger::info(TEMPERATURE, "locating temperature sensors...");
@@ -30,12 +33,15 @@ void Temperature::setup()
     devices[i] = NULL;
     TemperatureSensor::prepareData();
 
-    TickHandler::getInstance()->attach(this, CFG_TICK_INTERVAL_TEMPERATURE);
+    tickHandler.attach(this, CFG_TICK_INTERVAL_TEMPERATURE);
 }
 
+/**
+ * process a tick event from the timer the device is registered to.
+ */
 void Temperature::handleTick()
 {
-    canHandlerEv->prepareOutputFrame(&outputFrame, CAN_ID_GEVCU_EXT_TEMPERATURE);
+    canHandlerEv.prepareOutputFrame(&outputFrame, CAN_ID_GEVCU_EXT_TEMPERATURE);
 
     // read temperatures and send them via CAN bus
     for (int i = 0; i < CFG_MAX_NUM_TEMPERATURE_SENSORS && devices[i] != NULL; i++) {
@@ -47,7 +53,7 @@ void Temperature::handleTick()
             outputFrame.data.byte[i] = constrain(round(devices[i]->getTemperatureCelsius()) + 50, 0, 255);
         }
     }
-    canHandlerEv->sendFrame(outputFrame);
+    canHandlerEv.sendFrame(outputFrame);
 
     // calculate temperatures for next tick
     TemperatureSensor::prepareData();
@@ -63,6 +69,9 @@ DeviceId Temperature::getId()
     return TEMPERATURE;
 }
 
+/*
+ * Find the minimum temperature in celsius from all found sensors
+ */
 float Temperature::getMinimum()
 {
     float minimum = 999.0;
@@ -76,6 +85,9 @@ float Temperature::getMinimum()
     return minimum;
 }
 
+/*
+ * Find the maximum temperature in celsius from all found sensors
+ */
 float Temperature::getMaximum()
 {
     float maximum = -999.0;

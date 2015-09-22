@@ -29,7 +29,6 @@ public:
 protected:
 
 private:
-    CanHandler *canHandlerEv;
     CAN_FRAME outputFrame; // the output CAN frame;
     TemperatureSensor *devices[CFG_MAX_NUM_TEMPERATURE_SENSORS];
 };

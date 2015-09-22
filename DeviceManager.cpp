@@ -8,9 +8,36 @@
  and that a device can send information to other devices by either type (BMS, motor ctrl, etc)
  or by device ID.
 
+ The device class itself has the handlers defined so the tick and canbus handling code
+ need only call these existing functions but the manager interface needs to
+ expose a way to register them with the system.
+
+ Copyright (c) 2013 Collin Kidder, Michael Neuweiler, Charles Galpin
+
+ Permission is hereby granted, free of charge, to any person obtaining
+ a copy of this software and associated documentation files (the
+ "Software"), to deal in the Software without restriction, including
+ without limitation the rights to use, copy, modify, merge, publish,
+ distribute, sublicense, and/or sell copies of the Software, and to
+ permit persons to whom the Software is furnished to do so, subject to
+ the following conditions:
+
+ The above copyright notice and this permission notice shall be included
+ in all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
  */
 
 #include "DeviceManager.h"
+
+DeviceManager deviceManager;
 
 DeviceManager::DeviceManager()
 {
@@ -20,31 +47,19 @@ DeviceManager::DeviceManager()
 }
 
 /*
- * Get the instance of the DeviceManager (singleton pattern)
- *
- * Note: It's a simple singleton implementation - no worries about
- * thread-safety and memory-leaks, this object lives as long as the
- * Arduino has power.
- */
-DeviceManager *DeviceManager::getInstance()
-{
-    static DeviceManager* deviceManager = new DeviceManager();
-    return deviceManager;
-}
-
-/*
  * Add the specified device to the list of registered devices
  */
 void DeviceManager::addDevice(Device *device)
 {
-    Logger::info(device->getId(), "add device: %s", device->getCommonName());
+    Logger::info(device->getId(), "add device: %s (id: %X)", device->getCommonName(), device->getId());
+
     if (findDevice(device) == -1) {
         int8_t i = findDevice(NULL);
 
         if (i != -1) {
             devices[i] = device;
         } else {
-            Logger::error("unable to register device, max number of devices reached.");
+            Logger::error(device->getId(), "unable to register device, max number of devices reached.");
         }
     }
 }
@@ -70,18 +85,23 @@ void DeviceManager::removeDevice(Device *device)
  whatever you want. The standard message types are to enforce standard messages for easy
  intercommunication.
  */
-void DeviceManager::sendMessage(DeviceType devType, DeviceId devId, uint32_t msgType, void* message)
+bool DeviceManager::sendMessage(DeviceType devType, DeviceId devId, uint32_t msgType, void* message)
 {
+    bool foundDevice = false;
     for (int i = 0; i < CFG_DEV_MGR_MAX_DEVICES; i++) {
-        if (devices[i]) {
+        if (devices[i] && (devices[i]->isEnabled() || msgType == MSG_ENABLE)) { //does this object exist and is it enabled?
             if (devType == DEVICE_ANY || devType == devices[i]->getType()) {
                 if (devId == INVALID || devId == devices[i]->getId()) {
-                    Logger::debug("Sending msg %X to device with ID %X", msgType, devices[i]->getId());
+                    if (Logger::isDebug()) {
+                        Logger::debug("Sending msg %X to device %X", msgType, devices[i]->getId());
+                    }
                     devices[i]->handleMessage(msgType, message);
+                    foundDevice = true;
                 }
             }
         }
     }
+    return foundDevice;
 }
 
 void DeviceManager::setParameter(DeviceType deviceType, DeviceId deviceId, uint32_t msgType, char *key, char *value)
@@ -98,10 +118,10 @@ void DeviceManager::setParameter(DeviceType deviceType, DeviceId deviceId, uint3
 }
 
 /*
- Allows one to request a reference to a device with the given ID. This lets code specifically request a certain
- device. Normally this would be a bad idea because it sort of breaks the OOP design philosophy of polymorphism
- but sometimes you can't help it.
- */
+Allows one to request a reference to a device with the given ID. This lets code specifically request a certain
+device. Normally this would be a bad idea because it sort of breaks the OOP design philosophy of polymorphism
+but sometimes you can't help it.
+*/
 Device *DeviceManager::getDeviceByID(DeviceId id)
 {
     for (int i = 0; i < CFG_DEV_MGR_MAX_DEVICES; i++) {
@@ -117,14 +137,16 @@ Device *DeviceManager::getDeviceByID(DeviceId id)
 }
 
 /*
- The more object oriented version of the above function. Allows one to find the first device that matches
- a given type and that is enabled.
- */
+The more object oriented version of the above function. Allows one to find the first device that matches
+a given type and that is enabled.
+*/
 Device *DeviceManager::getDeviceByType(DeviceType type)
 {
     for (int i = 0; i < CFG_DEV_MGR_MAX_DEVICES; i++) {
-        if (devices[i] && devices[i]->getType() == type) {
-            return devices[i];
+        if (devices[i]) {
+            if (devices[i]->getType() == type && devices[i]->isEnabled()) {
+                return devices[i];
+            }
         }
     }
     return 0; //NULL!
@@ -145,26 +167,20 @@ int8_t DeviceManager::findDevice(Device *device)
     return -1;
 }
 
-/*
- * Count the number of registered devices of a certain type.
- */
-uint8_t DeviceManager::countDeviceType(DeviceType deviceType)
+void DeviceManager::printDeviceList()
 {
-    uint8_t count = 0;
+    Logger::console("Currently enabled devices: (DISABLE= to disable)");
 
     for (int i = 0; i < CFG_DEV_MGR_MAX_DEVICES; i++) {
-        if (devices[i]->getType() == deviceType) {
-            count++;
+        if (devices[i] && devices[i]->isEnabled()) {
+            Logger::console("     %X     %s", devices[i]->getId(), devices[i]->getCommonName());
         }
     }
 
-    return count;
-}
+    Logger::console("Currently disabled devices: (ENABLE= to enable)");
 
-void DeviceManager::printDeviceList()
-{
     for (int i = 0; i < CFG_DEV_MGR_MAX_DEVICES; i++) {
-        if (devices[i]) {
+        if (devices[i] && !devices[i]->isEnabled()) {
             Logger::console("     %X     %s", devices[i]->getId(), devices[i]->getCommonName());
         }
     }

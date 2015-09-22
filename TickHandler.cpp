@@ -6,9 +6,34 @@
  * TickObserver with the same interval are grouped to the same timer
  * and triggered in sequence per timer interrupt.
  *
+ * NOTE: The initialize() method must be called before a observer is registered !
+ *
+ Copyright (c) 2013 Collin Kidder, Michael Neuweiler, Charles Galpin
+
+ Permission is hereby granted, free of charge, to any person obtaining
+ a copy of this software and associated documentation files (the
+ "Software"), to deal in the Software without restriction, including
+ without limitation the rights to use, copy, modify, merge, publish,
+ distribute, sublicense, and/or sell copies of the Software, and to
+ permit persons to whom the Software is furnished to do so, subject to
+ the following conditions:
+
+ The above copyright notice and this permission notice shall be included
+ in all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
  */
 
 #include "TickHandler.h"
+
+TickHandler tickHandler;
 
 TickHandler::TickHandler()
 {
@@ -20,15 +45,6 @@ TickHandler::TickHandler()
         }
     }
     bufferHead = bufferTail = 0;
-}
-
-/*
- * Get a singleton instance of the TickHandler
- */
-TickHandler *TickHandler::getInstance()
-{
-    static TickHandler *tickHandler = new TickHandler();
-    return tickHandler;
 }
 
 /**
@@ -184,63 +200,63 @@ void TickHandler::handleInterrupt(int timerNumber)
  */
 void timer0Interrupt()
 {
-    TickHandler::getInstance()->handleInterrupt(0);
+    tickHandler.handleInterrupt(0);
 }
 /*
  * Interrupt function for Timer1
  */
 void timer1Interrupt()
 {
-    TickHandler::getInstance()->handleInterrupt(1);
+    tickHandler.handleInterrupt(1);
 }
 /*
  * Interrupt function for Timer2
  */
 void timer2Interrupt()
 {
-    TickHandler::getInstance()->handleInterrupt(2);
+    tickHandler.handleInterrupt(2);
 }
 /*
  * Interrupt function for Timer3
  */
 void timer3Interrupt()
 {
-    TickHandler::getInstance()->handleInterrupt(3);
+    tickHandler.handleInterrupt(3);
 }
 /*
  * Interrupt function for Timer4
  */
 void timer4Interrupt()
 {
-    TickHandler::getInstance()->handleInterrupt(4);
+    tickHandler.handleInterrupt(4);
 }
 /*
  * Interrupt function for Timer5
  */
 void timer5Interrupt()
 {
-    TickHandler::getInstance()->handleInterrupt(5);
+    tickHandler.handleInterrupt(5);
 }
 /*
  * Interrupt function for Timer6
  */
 void timer6Interrupt()
 {
-    TickHandler::getInstance()->handleInterrupt(6);
+    tickHandler.handleInterrupt(6);
 }
 /*
  * Interrupt function for Timer7
  */
 void timer7Interrupt()
 {
-    TickHandler::getInstance()->handleInterrupt(7);
+    tickHandler.handleInterrupt(7);
 }
 /*
  * Interrupt function for Timer8
  */
 void timer8Interrupt()
 {
-    TickHandler::getInstance()->handleInterrupt(8);
+    tickHandler.handleInterrupt(8);
 }
 
 /*

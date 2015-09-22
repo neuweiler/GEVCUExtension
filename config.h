@@ -1,6 +1,32 @@
 /*
  * config.h
  *
+ * Defines the components to be used in the GEVCU and allows the user to configure
+ * static parameters.
+ *
+ * Note: Make sure with all pin defintions of your hardware that each pin number is
+ *       only defined once.
+
+ Copyright (c) 2013 Collin Kidder, Michael Neuweiler, Charles Galpin
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 #ifndef CONFIG_H_
@@ -24,6 +50,7 @@
  * try to use the same numbers for several devices because then they will share
  * the same timer (out of a limited number of 9 timers).
  */
+#define CFG_TICK_INTERVAL_MEM_CACHE                   40000
 #define CFG_TICK_INTERVAL_HEARTBEAT                 2000000
 #define CFG_TICK_INTERVAL_TEMPERATURE               2000000
 #define CFG_TICK_INTERVAL_EBERSPAECHER_HEATER         60000
@@ -33,10 +60,11 @@
  * CAN BUS CONFIGURATION
  */
 #define CFG_CAN0_SPEED CAN_BPS_500K // specify the speed of the CAN0 bus (EV)
-#define CFG_CAN1_SPEED CAN_BPS_33333 // specify the speed of the CAN1 bus (Car)
+#define CFG_CAN1_SPEED CAN_BPS_33333 // specify the speed of the CAN1 bus (Car / SW-CAN)
 #define CFG_CAN0_NUM_TX_MAILBOXES 3 // how many of 8 mailboxes are used for TX for CAN0, rest is used for RX
 #define CFG_CAN1_NUM_TX_MAILBOXES 5 // how many of 8 mailboxes are used for TX for CAN1, rest is used for RX
 #define CFG_CAN_IO_MSG_TIMEOUT 1000 // milliseconds a can IO message may be missing before the device faults
+#define CFG_CAN1_HV_MODE_PIN 51 // pin to use to set SW-CAN chip to HV mode (for wake-up)
 
 /*
  * HARD CODED PARAMETERS
