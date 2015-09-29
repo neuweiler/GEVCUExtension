@@ -31,6 +31,7 @@
  */
 EberspaecherHeater::EberspaecherHeater() : Device()
 {
+    prefsHandler = new PrefHandler(EBERSPAECHER);
     powerRequested = 0;
     commonName = "Eberspaecher Heater";
 }
@@ -149,18 +150,14 @@ void EberspaecherHeater::calculatePower()
 {
     powerRequested = 0; // value from 0 to 100 percent power
 
-    //TODO: read temperature via analog input. based on delta to configured temperature set the power requested
-    powerRequested = 5;
-
-    if (powerRequested > 0) {
-        if (!running) {
-            sendWakeup();
+    if (status.analogIn[0] != 0) {
+        powerRequested = map(status.analogIn[0], 0, 4095, 0, 100);
+        if (Logger::isDebug()) {
+            Logger::debug(EBERSPAECHER,"analog in: %d, power: %d%%", status.analogIn[0], powerRequested);
         }
-        running = true;
-    } else {
-        running = false;
     }
-    running = (powerRequested > 0 ? true : false);
+
+    powerOn = (powerRequested > 0 ? true : false);
 }
 
 /*
@@ -170,17 +167,27 @@ void EberspaecherHeater::calculatePower()
  */
 void EberspaecherHeater::sendControl()
 {
+    if (powerRequested > 0) {
+        if (!running) {
+            sendWakeup();
+        }
+        running = true;
+    } else {
+        running = false;
+    }
+
+    // map requested power (percentage) to valid range of heater (0 - 0x85)
     frameControl.data.byte[1] = map(powerRequested, 0, 100, 0, 0x85);
 
     if (Logger::isDebug()) {
         Logger::debug(EBERSPAECHER, "requested power: %l", powerRequested);
-        canHandlerCar.logFrame(frameKeepAlive);
-        canHandlerCar.logFrame(frameCmd1);
-        canHandlerCar.logFrame(frameControl);
-        canHandlerCar.logFrame(frameCmd2);
-        canHandlerCar.logFrame(frameCmd3);
-        canHandlerCar.logFrame(frameCmd4);
-        canHandlerCar.logFrame(frameCmd5);
+//        canHandlerCar.logFrame(frameKeepAlive);
+//        canHandlerCar.logFrame(frameCmd1);
+//        canHandlerCar.logFrame(frameControl);
+//        canHandlerCar.logFrame(frameCmd2);
+//        canHandlerCar.logFrame(frameCmd3);
+//        canHandlerCar.logFrame(frameCmd4);
+//        canHandlerCar.logFrame(frameCmd5);
     }
 
     canHandlerCar.sendFrame(frameKeepAlive);

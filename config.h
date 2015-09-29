@@ -9,24 +9,24 @@
 
  Copyright (c) 2013 Collin Kidder, Michael Neuweiler, Charles Galpin
 
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
+ Permission is hereby granted, free of charge, to any person obtaining
+ a copy of this software and associated documentation files (the
+ "Software"), to deal in the Software without restriction, including
+ without limitation the rights to use, copy, modify, merge, publish,
+ distribute, sublicense, and/or sell copies of the Software, and to
+ permit persons to whom the Software is furnished to do so, subject to
+ the following conditions:
 
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
+ The above copyright notice and this permission notice shall be included
+ in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 #ifndef CONFIG_H_
@@ -41,7 +41,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * SERIAL CONFIGURATION
  */
 #define CFG_SERIAL_SPEED 115200
-#define SerialUSB Serial // re-route serial-usb output to programming port ;) comment if output should go to std usb
+//#define SerialUSB Serial // re-route serial-usb output to programming port ;) comment if output should go to std usb
 
 /*
  * TIMER INTERVALS
@@ -73,14 +73,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * the parameter values defined here are used instead of those stored in the EEPROM.
  */
 //#define USE_HARD_CODED
-#define PrechargeRelayOutput 0
-#define MainContactorRelayOutput 1
-#define SecondaryContactorRelayOutput 2
-#define EnableRelayOutput   3
-#define BrakeLightOutput    4
-#define ReverseLightOutput  5
-#define CoolingFanRelayOutput  7  //output to use for cooling fan
-
 /*
  * ARRAY SIZE
  *
@@ -99,27 +91,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #define CFG_OUTPUT_NONE                 255
 #define CFG_BLINK_LED                   13 //13 is L, 73 is TX, 72 is RX
-
-#define CFG_IO_TEMPERATURE_SENSOR       20
-
-#define CFG_IO_PRE_CHARGE_RELAY         22
-#define CFG_IO_MAIN_CONTACTOR           23
-#define CFG_IO_SECONDAY_CONTACTOR       24
-#define CFG_IO_FAST_CHARGE_CONTACTOR    25
-
-#define CFG_IO_ENABLE_MOTOR             29
-#define CFG_IO_ENABLE_CHARGER           27
-#define CFG_IO_ENABLE_DCDC              28
-#define CFG_IO_ENABLE_HEATER            26
-
-#define CFG_IO_HEATER_VALVE             30
-#define CFG_IO_HEATER_PUMP              31
-#define CFG_IO_COOLING_PUMP             32
-#define CFG_IO_COOLING_FAN              33
-
-#define CFG_IO_BRAKE_LIGHT              34
-#define CFG_IO_REVERSE_LIGHT            35
-#define CFG_IO_WARNING                  36
-#define CFG_IO_POWER_LIMITATION         37
+#define CFG_EEPROM_WRITE_PROTECT		19 // pin used to control the write-enable signal for the eeprom, use 18 for GEVCU 2.x
+#define CFG_IO_TEMPERATURE_SENSOR       7
 
 #endif /* CONFIG_H_ */

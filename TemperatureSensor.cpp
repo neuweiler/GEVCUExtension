@@ -168,7 +168,7 @@ TemperatureSensor *TemperatureSensor::search()
 
     if (ds.search(addr)) {
         if (OneWire::crc8(addr, 7) != addr[7]) {
-            Serial.print("invalid CRC!\n");
+            SerialUSB.print("invalid CRC!\n");
             return NULL;
         }
         return new TemperatureSensor(addr);

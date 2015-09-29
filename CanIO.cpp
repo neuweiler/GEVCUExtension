@@ -31,6 +31,7 @@
  */
 CanIO::CanIO() : Device()
 {
+    prefsHandler = new PrefHandler(CAN_IO);
     lastReception = -1;
     commonName = "Can I/O";
 }
@@ -42,28 +43,29 @@ void CanIO::setup()
 {
     Device::setup(); //call base class
 
+    CanIOConfiguration *config = (CanIOConfiguration *) getConfiguration();
     resetOutput(); // safety: make sure no output is activated when setting the pin mode
 
     // initialize digital output
-    setPinMode(CFG_IO_PRE_CHARGE_RELAY);
-    setPinMode(CFG_IO_MAIN_CONTACTOR);
-    setPinMode(CFG_IO_SECONDAY_CONTACTOR);
-    setPinMode(CFG_IO_FAST_CHARGE_CONTACTOR);
+    setPinMode(config->preChargeRelayOutput);
+    setPinMode(config->mainContactorOutput);
+    setPinMode(config->secondayContactorOutput);
+    setPinMode(config->fastChargeContactorOutput);
 
-    setPinMode(CFG_IO_ENABLE_MOTOR);
-    setPinMode(CFG_IO_ENABLE_CHARGER);
-    setPinMode(CFG_IO_ENABLE_DCDC);
-    setPinMode(CFG_IO_ENABLE_HEATER);
+    setPinMode(config->enableMotorOutput);
+    setPinMode(config->enableChargerOutput);
+    setPinMode(config->enableDcDcOutput);
+    setPinMode(config->enableHeaterOutput);
 
-    setPinMode(CFG_IO_HEATER_VALVE);
-    setPinMode(CFG_IO_HEATER_PUMP);
-    setPinMode(CFG_IO_COOLING_PUMP);
-    setPinMode(CFG_IO_COOLING_FAN);
+    setPinMode(config->heaterValveOutput);
+    setPinMode(config->heaterPumpOutput);
+    setPinMode(config->coolingPumpOutput);
+    setPinMode(config->coolingFanOutput);
 
-    setPinMode(CFG_IO_BRAKE_LIGHT);
-    setPinMode(CFG_IO_REVERSE_LIGHT);
-    setPinMode(CFG_IO_WARNING);
-    setPinMode(CFG_IO_POWER_LIMITATION);
+    setPinMode(config->brakeLightOutput);
+    setPinMode(config->reverseLightOutput);
+    setPinMode(config->warningOutput);
+    setPinMode(config->powerLimitationOutput);
     resetOutput(); // safety: to be 100% sure no relay pulls by accident, reset the output again
 
     ready = true;
@@ -122,25 +124,27 @@ void CanIO::setOutput(uint8_t pin, bool active)
  */
 void CanIO::resetOutput()
 {
-    setOutput(CFG_IO_PRE_CHARGE_RELAY, false);
-    setOutput(CFG_IO_MAIN_CONTACTOR, false);
-    setOutput(CFG_IO_SECONDAY_CONTACTOR, false);
-    setOutput(CFG_IO_FAST_CHARGE_CONTACTOR, false);
+    CanIOConfiguration *config = (CanIOConfiguration *) getConfiguration();
 
-    setOutput(CFG_IO_ENABLE_MOTOR, false);
-    setOutput(CFG_IO_ENABLE_CHARGER, false);
-    setOutput(CFG_IO_ENABLE_DCDC, false);
-    setOutput(CFG_IO_ENABLE_HEATER, false);
+    setOutput(config->preChargeRelayOutput, false);
+    setOutput(config->mainContactorOutput, false);
+    setOutput(config->secondayContactorOutput, false);
+    setOutput(config->fastChargeContactorOutput, false);
 
-    setOutput(CFG_IO_HEATER_VALVE, false);
-    setOutput(CFG_IO_HEATER_PUMP, false);
-    setOutput(CFG_IO_COOLING_PUMP, false);
-    setOutput(CFG_IO_COOLING_FAN, false);
+    setOutput(config->enableMotorOutput, false);
+    setOutput(config->enableChargerOutput, false);
+    setOutput(config->enableDcDcOutput, false);
+    setOutput(config->enableHeaterOutput, false);
 
-    setOutput(CFG_IO_BRAKE_LIGHT, false);
-    setOutput(CFG_IO_REVERSE_LIGHT, false);
-    setOutput(CFG_IO_WARNING, false);
-    setOutput(CFG_IO_POWER_LIMITATION, false);
+    setOutput(config->heaterValveOutput, false);
+    setOutput(config->heaterPumpOutput, false);
+    setOutput(config->coolingPumpOutput, false);
+    setOutput(config->coolingFanOutput, false);
+
+    setOutput(config->brakeLightOutput, false);
+    setOutput(config->reverseLightOutput, false);
+    setOutput(config->warningOutput, false);
+    setOutput(config->powerLimitationOutput, false);
 }
 
 /*
@@ -156,13 +160,13 @@ void CanIO::handleCanFrame(CAN_FRAME *frame)
 
     switch (frame->id) {
     case CAN_ID_GEVCU_STATUS:
-        processGevcuStatus(frame->data.bytes);
+        processGevcuStatus(frame);
         running = true;
         lastReception = millis();
         break;
 
     case CAN_ID_GEVCU_ANALOG_IO:
-        processGevcuAnalogIO(frame->data.bytes);
+        processGevcuAnalogIO(frame);
         break;
     }
 }
@@ -171,34 +175,35 @@ void CanIO::handleCanFrame(CAN_FRAME *frame)
  * Process a status message which was received from the GEVCU
  * and set system state and I/O accordingly
  */
-void CanIO::processGevcuStatus(uint8_t data[])
+void CanIO::processGevcuStatus(CAN_FRAME *frame)
 {
+    CanIOConfiguration *config = (CanIOConfiguration *) getConfiguration();
+
     // safety: set the system state, a error will cause a call of tearDown()
     // and prevent any activation of outputs.
-    status.setSystemState((Status::SystemState) data[4]);
+    status.setSystemState((Status::SystemState) frame->data.byte[4]);
 
-    uint16_t logicIO = (data[3] << 0) | (data[2] << 8);
-    uint8_t status = data[5];
+    uint16_t logicIO = frame->data.s1;
 
-    setOutput(CFG_IO_PRE_CHARGE_RELAY, logicIO & preChargeRelay);
-    setOutput(CFG_IO_MAIN_CONTACTOR, logicIO & mainContactor);
-    setOutput(CFG_IO_SECONDAY_CONTACTOR, logicIO & secondaryContactor);
-    setOutput(CFG_IO_FAST_CHARGE_CONTACTOR, logicIO & fastChargeContactor);
+    setOutput(config->preChargeRelayOutput, logicIO & preChargeRelay);
+    setOutput(config->mainContactorOutput, logicIO & mainContactor);
+    setOutput(config->secondayContactorOutput, logicIO & secondaryContactor);
+    setOutput(config->fastChargeContactorOutput, logicIO & fastChargeContactor);
 
-    setOutput(CFG_IO_ENABLE_MOTOR, logicIO & enableMotor);
-    setOutput(CFG_IO_ENABLE_CHARGER, logicIO & enableCharger);
-    setOutput(CFG_IO_ENABLE_DCDC, logicIO & enableDcDc);
-    setOutput(CFG_IO_ENABLE_HEATER, logicIO & enableHeater);
+    setOutput(config->enableMotorOutput, logicIO & enableMotor);
+    setOutput(config->enableChargerOutput, logicIO & enableCharger);
+    setOutput(config->enableDcDcOutput, logicIO & enableDcDc);
+    setOutput(config->enableHeaterOutput, logicIO & enableHeater);
 
-    setOutput(CFG_IO_HEATER_VALVE, logicIO & heaterValve);
-    setOutput(CFG_IO_HEATER_PUMP, logicIO & heaterPump);
-    setOutput(CFG_IO_COOLING_PUMP, logicIO & coolingPump);
-    setOutput(CFG_IO_COOLING_FAN, logicIO & coolingFan);
+    setOutput(config->heaterValveOutput, logicIO & heaterValve);
+    setOutput(config->heaterPumpOutput, logicIO & heaterPump);
+    setOutput(config->coolingPumpOutput, logicIO & coolingPump);
+    setOutput(config->coolingFanOutput, logicIO & coolingFan);
 
-    setOutput(CFG_IO_BRAKE_LIGHT, logicIO & brakeLight);
-    setOutput(CFG_IO_REVERSE_LIGHT, logicIO & reverseLight);
-    setOutput(CFG_IO_WARNING, logicIO & warning);
-    setOutput(CFG_IO_POWER_LIMITATION, logicIO & powerLimitation);
+    setOutput(config->brakeLightOutput, logicIO & brakeLight);
+    setOutput(config->reverseLightOutput, logicIO & reverseLight);
+    setOutput(config->warningOutput, logicIO & warning);
+    setOutput(config->powerLimitationOutput, logicIO & powerLimitation);
 
     if (Logger::isDebug()) {
         Logger::debug(CAN_IO, "pre-charge: %t, main cont: %t, sec cont: %t, fast charge: %t", logicIO & preChargeRelay, logicIO & mainContactor,
@@ -215,9 +220,12 @@ void CanIO::processGevcuStatus(uint8_t data[])
 /*
  * process a status message which was received e.g. from the heater's temperature sensor.
  */
-void CanIO::processGevcuAnalogIO(uint8_t data[])
+void CanIO::processGevcuAnalogIO(CAN_FRAME *frame)
 {
-    //TODO: implement processing of bits and bytes
+    status.analogIn[0] = frame->data.s0;
+    status.analogIn[1] = frame->data.s1;
+    status.analogIn[2] = frame->data.s2;
+    status.analogIn[3] = frame->data.s3;
 }
 
 DeviceType CanIO::getType()
@@ -253,15 +261,54 @@ void CanIO::loadConfiguration()
     if (prefsHandler->checksumValid()) { //checksum is good, read in the values stored in EEPROM
 #endif
         uint8_t temp;
-        prefsHandler->read(EECAN_xxx, &config->xxx);
+        prefsHandler->read(EECAN_PRE_CHARGE_RELAY_OUTPUT, &config->preChargeRelayOutput);
+        prefsHandler->read(EECAN_MAIN_CONTACTOR_OUTPUT, &config->mainContactorOutput);
+        prefsHandler->read(EECAN_SECONDAY_CONTACTOR_OUTPUT, &config->secondayContactorOutput);
+        prefsHandler->read(EECAN_FAST_CHARGE_CONTACTOR_OUTPUT, &config->fastChargeContactorOutput);
+
+        prefsHandler->read(EECAN_ENABLE_MOTOR_OUTPUT, &config->enableMotorOutput);
+        prefsHandler->read(EECAN_ENABLE_CHARGER_OUTPUT, &config->enableChargerOutput);
+        prefsHandler->read(EECAN_ENABLE_DCDC_OUTPUT, &config->enableDcDcOutput);
+        prefsHandler->read(EECAN_ENABLE_HEATER_OUTPUT, &config->enableHeaterOutput);
+
+        prefsHandler->read(EECAN_HEATER_VALVE_OUTPUT, &config->heaterValveOutput);
+        prefsHandler->read(EECAN_HEATER_PUMP_OUTPUT, &config->heaterPumpOutput);
+        prefsHandler->read(EECAN_COOLING_PUMP_OUTPUT, &config->coolingPumpOutput);
+        prefsHandler->read(EECAN_COOLING_FAN_OUTPUT, &config->coolingFanOutput);
+
+        prefsHandler->read(EECAN_BRAKE_LIGHT_OUTPUT, &config->brakeLightOutput);
+        prefsHandler->read(EECAN_REVERSE_LIGHT_OUTPUT, &config->reverseLightOutput);
+        prefsHandler->read(EECAN_WARNING_OUTPUT, &config->warningOutput);
+        prefsHandler->read(EECAN_POWER_LIMITATION_OUTPUT, &config->powerLimitationOutput);
+
         prefsHandler->read(EECAN_yyy, &temp);
         config->yyy = (temp != 0);
     } else { //checksum invalid, reinitialize values and store to EEPROM
-        config->xxx = 0;
-        config->yyy = false;
+        config->preChargeRelayOutput = 22;
+        config->mainContactorOutput = 23;
+        config->secondayContactorOutput = 24;
+        config->fastChargeContactorOutput = 25;
+
+        config->enableMotorOutput = 29;
+        config->enableChargerOutput = 27;
+        config->enableDcDcOutput = 28;
+        config->enableHeaterOutput = 26;
+
+        config->heaterValveOutput = 30;
+        config->heaterPumpOutput = 31;
+        config->coolingPumpOutput = 32;
+        config->coolingFanOutput = 33;
+
+        config->brakeLightOutput = 34;
+        config->reverseLightOutput = 35;
+        config->warningOutput = 36;
+        config->powerLimitationOutput = 37;
         saveConfiguration();
     }
-    Logger::info(CAN_IO, "xxx: %d, yyy: %B", config->xxx, config->yyy);
+    Logger::info(CAN_IO, "preChargeRelay: %d, mainContactor: %d, secondaryContactor:%d, fastChargeContactor: %d", config->preChargeRelayOutput, config->mainContactorOutput, config->secondayContactorOutput, config->fastChargeContactorOutput);
+    Logger::info(CAN_IO, "enableMotor: %d, enableCharger: %d, enableDcDc:%d, enableHeater: %d", config->enableMotorOutput, config->enableChargerOutput, config->enableDcDcOutput, config->enableHeaterOutput);
+    Logger::info(CAN_IO, "heaterValve: %d, heaterPump: %d, coolingPump:%d, coolingFan: %d", config->heaterValveOutput, config->heaterPumpOutput, config->coolingPumpOutput, config->coolingFanOutput);
+    Logger::info(CAN_IO, "brakeLight: %d, reverseLight: %d, warning:%d, powerLimitation: %d", config->brakeLightOutput, config->reverseLightOutput, config->warningOutput, config->powerLimitationOutput);
 }
 
 /*
@@ -273,7 +320,26 @@ void CanIO::saveConfiguration()
 
     Device::saveConfiguration(); // call parent
 
-    prefsHandler->write(EECAN_xxx, config->xxx);
+    prefsHandler->write(EECAN_PRE_CHARGE_RELAY_OUTPUT, config->preChargeRelayOutput);
+    prefsHandler->write(EECAN_MAIN_CONTACTOR_OUTPUT, config->mainContactorOutput);
+    prefsHandler->write(EECAN_SECONDAY_CONTACTOR_OUTPUT, config->secondayContactorOutput);
+    prefsHandler->write(EECAN_FAST_CHARGE_CONTACTOR_OUTPUT, config->fastChargeContactorOutput);
+
+    prefsHandler->write(EECAN_ENABLE_MOTOR_OUTPUT, config->enableMotorOutput);
+    prefsHandler->write(EECAN_ENABLE_CHARGER_OUTPUT, config->enableChargerOutput);
+    prefsHandler->write(EECAN_ENABLE_DCDC_OUTPUT, config->enableDcDcOutput);
+    prefsHandler->write(EECAN_ENABLE_HEATER_OUTPUT, config->enableHeaterOutput);
+
+    prefsHandler->write(EECAN_HEATER_VALVE_OUTPUT, config->heaterValveOutput);
+    prefsHandler->write(EECAN_HEATER_PUMP_OUTPUT, config->heaterPumpOutput);
+    prefsHandler->write(EECAN_COOLING_PUMP_OUTPUT, config->coolingPumpOutput);
+    prefsHandler->write(EECAN_COOLING_FAN_OUTPUT, config->coolingFanOutput);
+
+    prefsHandler->write(EECAN_BRAKE_LIGHT_OUTPUT, config->brakeLightOutput);
+    prefsHandler->write(EECAN_REVERSE_LIGHT_OUTPUT, config->reverseLightOutput);
+    prefsHandler->write(EECAN_WARNING_OUTPUT, config->warningOutput);
+    prefsHandler->write(EECAN_POWER_LIMITATION_OUTPUT, config->powerLimitationOutput);
+
     prefsHandler->write(EECAN_yyy, (uint8_t) (config->yyy ? 1 : 0));
     prefsHandler->saveChecksum();
 }

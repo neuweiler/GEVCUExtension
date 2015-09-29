@@ -89,6 +89,7 @@ bool DeviceManager::sendMessage(DeviceType devType, DeviceId devId, uint32_t msg
 {
     bool foundDevice = false;
     for (int i = 0; i < CFG_DEV_MGR_MAX_DEVICES; i++) {
+
         if (devices[i] && (devices[i]->isEnabled() || msgType == MSG_ENABLE)) { //does this object exist and is it enabled?
             if (devType == DEVICE_ANY || devType == devices[i]->getType()) {
                 if (devId == INVALID || devId == devices[i]->getId()) {

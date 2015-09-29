@@ -8,8 +8,10 @@
 /**
  * Constructor to initialize class variables
  */
-Temperature::Temperature() : Device()
+Temperature::Temperature() :
+        Device()
 {
+    prefsHandler = new PrefHandler(TEMPERATURE);
     commonName = "TemperatureProbe";
 }
 

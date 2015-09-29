@@ -48,7 +48,26 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 class CanIOConfiguration : public DeviceConfiguration
 {
 public:
-    uint16_t xxx; // in W
+    uint8_t preChargeRelayOutput;
+    uint8_t mainContactorOutput;
+    uint8_t secondayContactorOutput;
+    uint8_t fastChargeContactorOutput;
+
+    uint8_t enableMotorOutput;
+    uint8_t enableChargerOutput;
+    uint8_t enableDcDcOutput;
+    uint8_t enableHeaterOutput;
+
+    uint8_t heaterValveOutput;
+    uint8_t heaterPumpOutput;
+    uint8_t coolingPumpOutput;
+    uint8_t coolingFanOutput;
+
+    uint8_t brakeLightOutput;
+    uint8_t reverseLightOutput;
+    uint8_t warningOutput;
+    uint8_t powerLimitationOutput;
+
     bool yyy; // flag ...
 };
 
@@ -103,8 +122,8 @@ public:
     void tearDown();
     void handleTick();
     void handleCanFrame(CAN_FRAME *frame);
-    void processGevcuStatus(uint8_t data[]);
-    void processGevcuAnalogIO(uint8_t data[]);
+    void processGevcuStatus(CAN_FRAME *frame);
+    void processGevcuAnalogIO(CAN_FRAME *frame);
     DeviceId getId();
     DeviceType getType();
     void loadConfiguration();

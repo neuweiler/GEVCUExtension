@@ -44,7 +44,8 @@
 #define SYSTEM_DUED     2
 #define SYSTEM_GEVCU3   3
 
-class PrefHandler {
+class PrefHandler
+{
 public:
 
     PrefHandler();
@@ -71,7 +72,7 @@ private:
     bool use_lkg; //use last known good config?
     bool enabled;
     int position; //position within the device table
-    void initDevTable();
+    void initDeviceTable();
     static int8_t findDevice(DeviceId);
 };
 
