@@ -4,26 +4,26 @@
  * Devices may register to this handler in order to receive CAN frames (publish/subscribe)
  * and they can also use this class to send messages.
  *
-Copyright (c) 2013 Collin Kidder, Michael Neuweiler, Charles Galpin
+ Copyright (c) 2013 Collin Kidder, Michael Neuweiler, Charles Galpin
 
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
+ Permission is hereby granted, free of charge, to any person obtaining
+ a copy of this software and associated documentation files (the
+ "Software"), to deal in the Software without restriction, including
+ without limitation the rights to use, copy, modify, merge, publish,
+ distribute, sublicense, and/or sell copies of the Software, and to
+ permit persons to whom the Software is furnished to do so, subject to
+ the following conditions:
 
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
+ The above copyright notice and this permission notice shall be included
+ in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
  */
 
@@ -109,9 +109,7 @@ void CanHandler::attach(CanObserver* observer, uint32_t id, uint32_t mask, bool 
 void CanHandler::detach(CanObserver* observer, uint32_t id, uint32_t mask)
 {
     for (int i = 0; i < CFG_CAN_NUM_OBSERVERS; i++) {
-        if (observerData[i].observer == observer &&
-                observerData[i].id == id &&
-                observerData[i].mask == mask) {
+        if (observerData[i].observer == observer && observerData[i].id == id && observerData[i].mask == mask) {
             observerData[i].observer = NULL;
 
             //TODO: if no more observers on same mailbox, disable its interrupt, reset mailbox
@@ -127,10 +125,9 @@ void CanHandler::detach(CanObserver* observer, uint32_t id, uint32_t mask)
 void CanHandler::logFrame(CAN_FRAME& frame)
 {
     if (Logger::isDebug()) {
-        Logger::debug("CAN: dlc=%X fid=%X id=%X ide=%X rtr=%X data=%X,%X,%X,%X,%X,%X,%X,%X",
-                      frame.length, frame.fid, frame.id, frame.extended, frame.rtr,
-                      frame.data.bytes[0], frame.data.bytes[1], frame.data.bytes[2], frame.data.bytes[3],
-                      frame.data.bytes[4], frame.data.bytes[5], frame.data.bytes[6], frame.data.bytes[7]);
+        Logger::debug("CAN: dlc=%X fid=%X id=%X ide=%X rtr=%X data=%X,%X,%X,%X,%X,%X,%X,%X", frame.length, frame.fid, frame.id, frame.extended,
+                frame.rtr, frame.data.bytes[0], frame.data.bytes[1], frame.data.bytes[2], frame.data.bytes[3], frame.data.bytes[4],
+                frame.data.bytes[5], frame.data.bytes[6], frame.data.bytes[7]);
     }
 }
 

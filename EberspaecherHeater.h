@@ -29,7 +29,7 @@
 #define CAN_MASK                0x0   // mask for above id's                     00000000000
 #define CAN_MASKED_ID           0x7ff // masked id for id's from 0x258 to 0x268  01001001000
 
-class EberspaecherHeaterConfiguration : public DeviceConfiguration
+class EberspaecherHeaterConfiguration: public DeviceConfiguration
 {
 public:
     uint16_t xxx; // in W

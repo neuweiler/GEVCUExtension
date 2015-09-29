@@ -26,7 +26,8 @@
 
 #include "Heartbeat.h"
 
-Heartbeat::Heartbeat() : Device()
+Heartbeat::Heartbeat() :
+        Device()
 {
     led = false;
     dotCount = 0;

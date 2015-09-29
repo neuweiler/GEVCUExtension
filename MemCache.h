@@ -50,7 +50,8 @@
  // each aging period below. Adjust accordingly.
  */
 
-class MemCache: public TickObserver {
+class MemCache: public TickObserver
+{
 public:
     void setup();
     void handleTick();
@@ -78,7 +79,8 @@ public:
     virtual ~MemCache();
 
 private:
-    typedef struct {
+    typedef struct
+    {
         uint8_t data[256];
         uint32_t address; //address of start of page
         uint8_t age; //

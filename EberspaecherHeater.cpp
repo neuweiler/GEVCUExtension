@@ -29,7 +29,8 @@
 /**
  * Constructor to initialize class variables
  */
-EberspaecherHeater::EberspaecherHeater() : Device()
+EberspaecherHeater::EberspaecherHeater() :
+        Device()
 {
     prefsHandler = new PrefHandler(EBERSPAECHER);
     powerRequested = 0;
@@ -153,7 +154,7 @@ void EberspaecherHeater::calculatePower()
     if (status.analogIn[0] != 0) {
         powerRequested = map(status.analogIn[0], 0, 4095, 0, 100);
         if (Logger::isDebug()) {
-            Logger::debug(EBERSPAECHER,"analog in: %d, power: %d%%", status.analogIn[0], powerRequested);
+            Logger::debug(EBERSPAECHER, "analog in: %d, power: %d%%", status.analogIn[0], powerRequested);
         }
     }
 

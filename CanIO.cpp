@@ -29,7 +29,8 @@
 /**
  * Constructor to initialize class variables
  */
-CanIO::CanIO() : Device()
+CanIO::CanIO() :
+        Device()
 {
     prefsHandler = new PrefHandler(CAN_IO);
     lastReception = -1;
@@ -305,10 +306,14 @@ void CanIO::loadConfiguration()
         config->powerLimitationOutput = 37;
         saveConfiguration();
     }
-    Logger::info(CAN_IO, "preChargeRelay: %d, mainContactor: %d, secondaryContactor:%d, fastChargeContactor: %d", config->preChargeRelayOutput, config->mainContactorOutput, config->secondayContactorOutput, config->fastChargeContactorOutput);
-    Logger::info(CAN_IO, "enableMotor: %d, enableCharger: %d, enableDcDc:%d, enableHeater: %d", config->enableMotorOutput, config->enableChargerOutput, config->enableDcDcOutput, config->enableHeaterOutput);
-    Logger::info(CAN_IO, "heaterValve: %d, heaterPump: %d, coolingPump:%d, coolingFan: %d", config->heaterValveOutput, config->heaterPumpOutput, config->coolingPumpOutput, config->coolingFanOutput);
-    Logger::info(CAN_IO, "brakeLight: %d, reverseLight: %d, warning:%d, powerLimitation: %d", config->brakeLightOutput, config->reverseLightOutput, config->warningOutput, config->powerLimitationOutput);
+    Logger::info(CAN_IO, "preChargeRelay: %d, mainContactor: %d, secondaryContactor:%d, fastChargeContactor: %d", config->preChargeRelayOutput,
+            config->mainContactorOutput, config->secondayContactorOutput, config->fastChargeContactorOutput);
+    Logger::info(CAN_IO, "enableMotor: %d, enableCharger: %d, enableDcDc:%d, enableHeater: %d", config->enableMotorOutput,
+            config->enableChargerOutput, config->enableDcDcOutput, config->enableHeaterOutput);
+    Logger::info(CAN_IO, "heaterValve: %d, heaterPump: %d, coolingPump:%d, coolingFan: %d", config->heaterValveOutput, config->heaterPumpOutput,
+            config->coolingPumpOutput, config->coolingFanOutput);
+    Logger::info(CAN_IO, "brakeLight: %d, reverseLight: %d, warning:%d, powerLimitation: %d", config->brakeLightOutput, config->reverseLightOutput,
+            config->warningOutput, config->powerLimitationOutput);
 }
 
 /*

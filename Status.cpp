@@ -32,14 +32,19 @@ Status status;
 /*
  * Constructor
  */
-Status::Status() {
+Status::Status()
+{
     systemState = startup;
+    for (int i = 0; i < 4; i++) {
+        analogIn[i] = 0;
+    }
 }
 
 /*
  * Retrieve the current system state.
  */
-Status::SystemState Status::getSystemState() {
+Status::SystemState Status::getSystemState()
+{
     return systemState;
 }
 
@@ -49,8 +54,8 @@ Status::SystemState Status::getSystemState() {
  * attempted, the new state will be 'error'.
  * The old and new state are broadcast to all devices.
  */
-Status::SystemState Status::setSystemState(SystemState newSystemState) {
-
+Status::SystemState Status::setSystemState(SystemState newSystemState)
+{
     if (systemState == newSystemState) {
         return systemState;
     }
@@ -129,7 +134,8 @@ Status::SystemState Status::setSystemState(SystemState newSystemState) {
 /*
  * Convert the current state into a string.
  */
-char *Status::systemStateToStr(SystemState state) {
+char *Status::systemStateToStr(SystemState state)
+{
     switch (state) {
     case startup:
         return "unknown";
