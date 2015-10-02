@@ -11,6 +11,9 @@
 #include "TickHandler.h"
 #include "CanHandler.h"
 #include "DeviceManager.h"
+#include "Temperature.h"
+
+#define MAX_POWER_WATT 6000
 
 // CAN bus id's for frames sent to the heater
 #define CAN_ID_WAKEUP       0x100 // wake up the device
@@ -32,8 +35,11 @@
 class EberspaecherHeaterConfiguration: public DeviceConfiguration
 {
 public:
-    uint16_t xxx; // in W
-    bool yyy; // flag ...
+    uint16_t maxPower; // maximum power in watt (0 - 6000)
+    uint8_t targetTemperature; // desired water temperature in deg C (0 - 100)
+    uint8_t deratingTemperature; // temperature at which power will be derated from maxPower to 0% at target temperature in deg C (0 - 100, 255 = ignore)
+    uint8_t extTemperatureOn; // external temperature at which heater is turned on in deg C (0 - 40, 999 = ignore)
+    uint8_t extTemperatureSensorAddress[8]; // address of external temperature sensor
 };
 
 class EberspaecherHeater: public Device, CanObserver
@@ -60,7 +66,8 @@ private:
     CAN_FRAME frameCmd3; // frame to send cmd3 message
     CAN_FRAME frameCmd4; // frame to send cmd4 message
     CAN_FRAME frameCmd5; // frame to send cmd5 message
-    uint8_t powerRequested; // value from 0 to 100 percent power
+    uint16_t powerRequested; // value from 0 to 6000 watt
+    Temperature *temperatureDevice;
 
     void calculatePower();
     void sendControl();

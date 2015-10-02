@@ -25,6 +25,7 @@ public:
     DeviceType getType();
     float getMinimum();
     float getMaximum();
+    float getSensorTemperature(byte[]);
 
 protected:
 

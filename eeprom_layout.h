@@ -108,8 +108,11 @@
 #define EE_CHECKSUM                         0 //1 byte - checksum for this section of EEPROM to makesure it is valid
 
 // heater data
-#define EEHEAT_xxx                          10 //2 bytes, unsigned int for ...
-#define EEHEAT_yyy                          12 // 1 byte - flag...
+#define EEHEAT_MAX_POWER                    10 // 2 bytes
+#define EEHEAT_TARGET_TEMPERATURE           12 // 1 bytes
+#define EEHEAT_DERATING_TEMPERATURE         13 // 1 byte
+#define EEHEAT_EXT_TEMPERATURE_ON           14 // 1 byte
+#define EEHEAT_EXT_TEMPERATURE_ADDRESS      15 // 8 bytes
 
 // can i/o data
 #define EECAN_PRE_CHARGE_RELAY_OUTPUT       10 // 1 byte, output pin

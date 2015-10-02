@@ -35,6 +35,8 @@ void Temperature::setup()
     devices[i] = NULL;
     TemperatureSensor::prepareData();
 
+    ready = true;
+
     tickHandler.attach(this, CFG_TICK_INTERVAL_TEMPERATURE);
 }
 
@@ -48,6 +50,7 @@ void Temperature::handleTick()
     // read temperatures and send them via CAN bus
     for (int i = 0; i < CFG_MAX_NUM_TEMPERATURE_SENSORS && devices[i] != NULL; i++) {
         devices[i]->retrieveData();
+        running = true;
         if (Logger::isDebug()) {
             Logger::debug(TEMPERATURE, "sensor #%d: %f C", i, devices[i]->getTemperatureCelsius());
         }
@@ -101,4 +104,18 @@ float Temperature::getMaximum()
         }
     }
     return maximum;
+}
+
+/*
+ * Get the temperature from a sensor by specifying its address
+ *
+ * returns 999 if sensor was not found
+ */
+float Temperature::getSensorTemperature(byte *address) {
+    for (int i = 0; i < CFG_MAX_NUM_TEMPERATURE_SENSORS && devices[i] != NULL; i++) {
+        if (memcmp(devices[i]->getAddress(), address, 8) == 0) {
+            return devices[i]->getTemperatureCelsius();
+        }
+    }
+    return 999;
 }

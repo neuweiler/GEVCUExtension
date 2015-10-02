@@ -44,10 +44,12 @@ void EberspaecherHeater::setup()
 {
     Device::setup(); //call base class
 
+    // switch to normal mode on SW-CAN
     pinMode(CFG_CAN1_HV_MODE_PIN, OUTPUT);
     digitalWrite(CFG_CAN1_HV_MODE_PIN, HIGH);
 
     prepareFrames();
+    temperatureDevice = (Temperature *)deviceManager.getDeviceByID(TEMPERATURE);
     ready = true;
 
     canHandlerCar.attach(this, CAN_MASKED_ID, CAN_MASK, false);
@@ -149,16 +151,44 @@ void EberspaecherHeater::prepareFrames()
  */
 void EberspaecherHeater::calculatePower()
 {
-    powerRequested = 0; // value from 0 to 100 percent power
+    EberspaecherHeaterConfiguration *config = (EberspaecherHeaterConfiguration *) getConfiguration();
+    float extnernalTemperature = 999;
+    int8_t waterTemperature = 127;
 
+    powerRequested = 0;
+
+    // get external temperature
+    if (temperatureDevice->isRunning()) {
+        extnernalTemperature = temperatureDevice->getSensorTemperature(config->extTemperatureSensorAddress);
+    }
+    // get water temperature from heater's temperature sensor
     if (status.analogIn[0] != 0) {
-        powerRequested = map(status.analogIn[0], 0, 4095, 0, 100);
-        if (Logger::isDebug()) {
-            Logger::debug(EBERSPAECHER, "analog in: %d, power: %d%%", status.analogIn[0], powerRequested);
+        //TODO: correct mapping of analog input of temperature sensor
+        waterTemperature = map(status.analogIn[0], 0, 4095, 0, 100);
+    }
+
+    // power on the device only if the external temperature is lower than or equal to configured temperature
+    if (extnernalTemperature <= config->extTemperatureOn) {
+        powerOn = true;
+    } else {
+        powerOn = false;
+    }
+
+    // calculate power
+    if (waterTemperature <= config->targetTemperature) {
+        // if below derating temperature, apply maximum power
+        if (config->deratingTemperature == 255 || waterTemperature < config->deratingTemperature) {
+            powerRequested = config->maxPower;
+        } else {
+            // if between derating temp and target temp calculate derating of maximum power
+            powerRequested = map(waterTemperature, config->targetTemperature, config->deratingTemperature, 0, config->maxPower);
         }
     }
 
-    powerOn = (powerRequested > 0 ? true : false);
+    if (Logger::isDebug()) {
+        Logger::debug(EBERSPAECHER, "analog in: %d, water temperature: %dC, ext temperature: %f, power requested: %d, power on: %B",
+                status.analogIn[0], waterTemperature, extnernalTemperature, powerRequested, powerOn);
+    }
 }
 
 /*
@@ -168,20 +198,25 @@ void EberspaecherHeater::calculatePower()
  */
 void EberspaecherHeater::sendControl()
 {
-    if (powerRequested > 0) {
+    if (powerOn) {
         if (!running) {
             sendWakeup();
+            running = true;
+            return;
         }
-        running = true;
     } else {
+        // request zero power
+        frameControl.data.byte[1] = 0;
+        canHandlerCar.sendFrame(frameControl);
         running = false;
+        return;
     }
 
     // map requested power (percentage) to valid range of heater (0 - 0x85)
-    frameControl.data.byte[1] = map(powerRequested, 0, 100, 0, 0x85);
+    frameControl.data.byte[1] = map(constrain(powerRequested, 0, MAX_POWER_WATT), 0, MAX_POWER_WATT, 0, 0x85);
 
     if (Logger::isDebug()) {
-        Logger::debug(EBERSPAECHER, "requested power: %l", powerRequested);
+        Logger::debug(EBERSPAECHER, "requested power: %l watt", powerRequested);
 //        canHandlerCar.logFrame(frameKeepAlive);
 //        canHandlerCar.logFrame(frameCmd1);
 //        canHandlerCar.logFrame(frameControl);
@@ -240,16 +275,22 @@ void EberspaecherHeater::loadConfiguration()
 #else
     if (prefsHandler->checksumValid()) { //checksum is good, read in the values stored in EEPROM
 #endif
-        uint8_t temp;
-        prefsHandler->read(EEHEAT_xxx, &config->xxx);
-        prefsHandler->read(EEHEAT_yyy, &temp);
-        config->yyy = (temp != 0);
+        prefsHandler->read(EEHEAT_MAX_POWER, &config->maxPower);
+        prefsHandler->read(EEHEAT_TARGET_TEMPERATURE, &config->targetTemperature);
+        prefsHandler->read(EEHEAT_DERATING_TEMPERATURE, &config->deratingTemperature);
+        prefsHandler->read(EEHEAT_EXT_TEMPERATURE_ON, &config->extTemperatureOn);
+        for (int i = 0; i < 8; i++) {
+            prefsHandler->read(EEHEAT_EXT_TEMPERATURE_ADDRESS + i, &config->extTemperatureSensorAddress[i]);
+        }
     } else { //checksum invalid, reinitialize values and store to EEPROM
-        config->xxx = 0;
-        config->yyy = false;
+        config->maxPower = 4000;
+        config->targetTemperature = 80;
+        config->deratingTemperature = 70;
+        config->extTemperatureOn = 15;
+        memset(config->extTemperatureSensorAddress, 0, 8);
         saveConfiguration();
     }
-    Logger::info(EBERSPAECHER, "xxx: %d, yyy: %B", config->xxx, config->yyy);
+    Logger::info(EBERSPAECHER, "maxPower: %d, target temperature: %d deg C, ext temperature on: %d deg C", config->maxPower, config->targetTemperature, config->extTemperatureOn);
 }
 
 /*
@@ -261,7 +302,12 @@ void EberspaecherHeater::saveConfiguration()
 
     Device::saveConfiguration(); // call parent
 
-    prefsHandler->write(EEHEAT_xxx, config->xxx);
-    prefsHandler->write(EEHEAT_yyy, (uint8_t) (config->yyy ? 1 : 0));
+    prefsHandler->write(EEHEAT_MAX_POWER, config->maxPower);
+    prefsHandler->write(EEHEAT_TARGET_TEMPERATURE, config->targetTemperature);
+    prefsHandler->write(EEHEAT_DERATING_TEMPERATURE, config->deratingTemperature);
+    prefsHandler->write(EEHEAT_EXT_TEMPERATURE_ON, config->extTemperatureOn);
+    for (int i = 0; i < 8; i++) {
+        prefsHandler->write(EEHEAT_EXT_TEMPERATURE_ADDRESS + i, config->extTemperatureSensorAddress[i]);
+    }
     prefsHandler->saveChecksum();
 }
