@@ -30,7 +30,8 @@ void Temperature::setup()
         devices[i] = TemperatureSensor::search();
         if (devices[i] == NULL)
             break;
-        Logger::info(TEMPERATURE, "found sensor #%d: addr=%X, %s", i, devices[i]->getAddress(), devices[i]->getTypeStr());
+        byte *addr = devices[i]->getAddress();
+        Logger::info(TEMPERATURE, "found sensor #%d: addr=0x%x %x %x %x %x %x %x %x, %s", i, addr[0], addr[1], addr[2], addr[3], addr[4], addr[5], addr[6], addr[7], devices[i]->getTypeStr());
     }
     devices[i] = NULL;
     TemperatureSensor::prepareData();
@@ -60,7 +61,7 @@ void Temperature::handleTick()
     }
     canHandlerEv.sendFrame(outputFrame);
 
-    // calculate temperatures for next tick
+    // order sensors to calculate temperatures for next tick
     TemperatureSensor::prepareData();
 }
 

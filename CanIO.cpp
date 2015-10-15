@@ -33,7 +33,7 @@ CanIO::CanIO() :
         Device()
 {
     prefsHandler = new PrefHandler(CAN_IO);
-    lastReception = -1;
+    lastReception = 0xffffff;
     commonName = "Can I/O";
 }
 
@@ -207,13 +207,13 @@ void CanIO::processGevcuStatus(CAN_FRAME *frame)
     setOutput(config->powerLimitationOutput, logicIO & powerLimitation);
 
     if (Logger::isDebug()) {
-        Logger::debug(CAN_IO, "pre-charge: %t, main cont: %t, sec cont: %t, fast charge: %t", logicIO & preChargeRelay, logicIO & mainContactor,
+        Logger::debug(CAN_IO, "pre-charge\t: %t, main cont\t\t: %t, sec cont\t: %t, fast charge\t: %t", logicIO & preChargeRelay, logicIO & mainContactor,
                 logicIO & secondaryContactor, logicIO & fastChargeContactor);
-        Logger::debug(CAN_IO, "enable motor: %t, enable charger: %t, enable DCDC: %t, enable heater: %t", logicIO & enableMotor,
+        Logger::debug(CAN_IO, "enable motor\t: %t, enable charger\t: %t, enable DCDC\t: %t, enable heater\t: %t", logicIO & enableMotor,
                 logicIO & enableCharger, logicIO & enableDcDc, logicIO & enableHeater);
-        Logger::debug(CAN_IO, "heater valve: %t, heater pump: %t, cooling pump: %t, cooling fan: %t", logicIO & heaterValve, logicIO & heaterPump,
+        Logger::debug(CAN_IO, "heater valve\t: %t, heater pump\t: %t, cooling pump\t: %t, cooling fan\t: %t", logicIO & heaterValve, logicIO & heaterPump,
                 logicIO & coolingPump, logicIO & coolingFan);
-        Logger::debug(CAN_IO, "brake: %t, reverse: %t, warning: %t, power limit: %t", logicIO & brakeLight, logicIO & reverseLight, logicIO & warning,
+        Logger::debug(CAN_IO, "brake\t\t: %t, reverse\t: %t, warning\t: %t, power limit\t: %t", logicIO & brakeLight, logicIO & reverseLight, logicIO & warning,
                 logicIO & powerLimitation);
     }
 }

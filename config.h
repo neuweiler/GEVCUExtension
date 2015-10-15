@@ -92,6 +92,6 @@
 #define CFG_OUTPUT_NONE                 255
 #define CFG_BLINK_LED                   13 //13 is L, 73 is TX, 72 is RX
 #define CFG_EEPROM_WRITE_PROTECT		19 // pin used to control the write-enable signal for the eeprom, use 18 for GEVCU 2.x
-#define CFG_IO_TEMPERATURE_SENSOR       7
+#define CFG_IO_TEMPERATURE_SENSOR       8 // pin to which the data line of the single wire temperature sensors are connected
 
 #endif /* CONFIG_H_ */

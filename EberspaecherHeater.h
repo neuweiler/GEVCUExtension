@@ -50,7 +50,7 @@ public:
     void tearDown();
     void handleTick();
     void handleCanFrame(CAN_FRAME *frame);
-    void processStatus(uint8_t data[]);
+    void processStatus(uint8_t *data);
     DeviceId getId();
     DeviceType getType();
     void loadConfiguration();

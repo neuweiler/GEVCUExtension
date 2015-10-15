@@ -153,7 +153,7 @@ void EberspaecherHeater::calculatePower()
 {
     EberspaecherHeaterConfiguration *config = (EberspaecherHeaterConfiguration *) getConfiguration();
     float extnernalTemperature = 999;
-    int8_t waterTemperature = 127;
+    int16_t waterTemperature = 1270; // tenth degree C
 
     powerRequested = 0;
 
@@ -164,7 +164,7 @@ void EberspaecherHeater::calculatePower()
     // get water temperature from heater's temperature sensor
     if (status.analogIn[0] != 0) {
         //TODO: correct mapping of analog input of temperature sensor
-        waterTemperature = map(status.analogIn[0], 0, 4095, 0, 100);
+        waterTemperature = map(status.analogIn[0], 0, 4095, 0, 1000);
     }
 
     // power on the device only if the external temperature is lower than or equal to configured temperature
@@ -175,19 +175,19 @@ void EberspaecherHeater::calculatePower()
     }
 
     // calculate power
-    if (waterTemperature <= config->targetTemperature) {
+    if (waterTemperature <= config->targetTemperature * 10) {
         // if below derating temperature, apply maximum power
-        if (config->deratingTemperature == 255 || waterTemperature < config->deratingTemperature) {
+        if (config->deratingTemperature == 255 || waterTemperature < config->deratingTemperature * 10) {
             powerRequested = config->maxPower;
         } else {
             // if between derating temp and target temp calculate derating of maximum power
-            powerRequested = map(waterTemperature, config->targetTemperature, config->deratingTemperature, 0, config->maxPower);
+            powerRequested = map(waterTemperature, config->targetTemperature * 10, config->deratingTemperature * 10, 0, config->maxPower);
         }
     }
 
     if (Logger::isDebug()) {
-        Logger::debug(EBERSPAECHER, "analog in: %d, water temperature: %dC, ext temperature: %f, power requested: %d, power on: %B",
-                status.analogIn[0], waterTemperature, extnernalTemperature, powerRequested, powerOn);
+        Logger::debug(EBERSPAECHER, "analog in: %d, water temperature: %fC, ext temperature: %f, power requested: %d, power on: %T",
+                status.analogIn[0], waterTemperature / 10.0f, extnernalTemperature, powerRequested, powerOn);
     }
 }
 
@@ -216,7 +216,6 @@ void EberspaecherHeater::sendControl()
     frameControl.data.byte[1] = map(constrain(powerRequested, 0, MAX_POWER_WATT), 0, MAX_POWER_WATT, 0, 0x85);
 
     if (Logger::isDebug()) {
-        Logger::debug(EBERSPAECHER, "requested power: %l watt", powerRequested);
 //        canHandlerCar.logFrame(frameKeepAlive);
 //        canHandlerCar.logFrame(frameCmd1);
 //        canHandlerCar.logFrame(frameControl);
@@ -238,7 +237,7 @@ void EberspaecherHeater::sendControl()
 /*
  * Process a status message which was received from the heater.
  */
-void EberspaecherHeater::processStatus(uint8_t data[])
+void EberspaecherHeater::processStatus(uint8_t *data)
 {
     //TODO: implement processing of bits and bytes
 }
@@ -282,6 +281,15 @@ void EberspaecherHeater::loadConfiguration()
         for (int i = 0; i < 8; i++) {
             prefsHandler->read(EEHEAT_EXT_TEMPERATURE_ADDRESS + i, &config->extTemperatureSensorAddress[i]);
         }
+//TODO: remove hard coded address
+config->extTemperatureSensorAddress[0] = 0x28;
+config->extTemperatureSensorAddress[1] = 0xFF;
+config->extTemperatureSensorAddress[2] = 0xE8;
+config->extTemperatureSensorAddress[3] = 0xA8;
+config->extTemperatureSensorAddress[4] = 0x64;
+config->extTemperatureSensorAddress[5] = 0x14;
+config->extTemperatureSensorAddress[6] = 0x2;
+config->extTemperatureSensorAddress[7] = 0x49;
     } else { //checksum invalid, reinitialize values and store to EEPROM
         config->maxPower = 4000;
         config->targetTemperature = 80;
