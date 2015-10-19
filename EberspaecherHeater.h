@@ -28,9 +28,9 @@
 // CAN bus id's for frames received from the heater
 
 //TODO: define correct can ID's, mask and masked id's
-#define CAN_ID_STATUS           0x555 // receive status message                  10101010101
+#define CAN_ID_STATUS           0x13FFE09D // receive status message             10011111111111110000010011101
 #define CAN_MASK                0x0   // mask for above id's                     00000000000
-#define CAN_MASKED_ID           0x7ff // masked id for id's from 0x258 to 0x268  01001001000
+#define CAN_MASKED_ID           0x0   // masked id for id's from 0x258 to 0x268  00000000000
 
 class EberspaecherHeaterConfiguration: public DeviceConfiguration
 {

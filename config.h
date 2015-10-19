@@ -64,7 +64,7 @@
 #define CFG_CAN0_NUM_TX_MAILBOXES 3 // how many of 8 mailboxes are used for TX for CAN0, rest is used for RX
 #define CFG_CAN1_NUM_TX_MAILBOXES 5 // how many of 8 mailboxes are used for TX for CAN1, rest is used for RX
 #define CFG_CAN_IO_MSG_TIMEOUT 1000 // milliseconds a can IO message may be missing before the device faults
-#define CFG_CAN1_HV_MODE_PIN 51 // pin to use to set SW-CAN chip to HV mode (for wake-up)
+#define CFG_CAN1_HV_MODE_PIN 52 // pin to use to set SW-CAN chip to HV mode (for wake-up)
 
 /*
  * HARD CODED PARAMETERS

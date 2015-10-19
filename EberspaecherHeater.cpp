@@ -52,7 +52,7 @@ void EberspaecherHeater::setup()
     temperatureDevice = (Temperature *)deviceManager.getDeviceByID(TEMPERATURE);
     ready = true;
 
-    canHandlerCar.attach(this, CAN_MASKED_ID, CAN_MASK, false);
+    canHandlerCar.attach(this, CAN_MASKED_ID, CAN_MASK, true);
     tickHandler.attach(this, CFG_TICK_INTERVAL_EBERSPAECHER_HEATER);
 }
 
@@ -98,6 +98,7 @@ void EberspaecherHeater::handleCanFrame(CAN_FRAME *frame)
  */
 void EberspaecherHeater::sendWakeup()
 {
+    Logger::debug(EBERSPAECHER, "sending wake-up signal");
     digitalWrite(CFG_CAN1_HV_MODE_PIN, LOW); // set HV mode
 
     // 0x100, False, 0, 00,00,00,00,00,00,00,00
@@ -168,11 +169,11 @@ void EberspaecherHeater::calculatePower()
     }
 
     // power on the device only if the external temperature is lower than or equal to configured temperature
-    if (extnernalTemperature <= config->extTemperatureOn) {
+//    if (extnernalTemperature <= config->extTemperatureOn) {
         powerOn = true;
-    } else {
-        powerOn = false;
-    }
+//    } else {
+//        powerOn = false;
+//    }
 
     // calculate power
     if (waterTemperature <= config->targetTemperature * 10) {
@@ -185,10 +186,10 @@ void EberspaecherHeater::calculatePower()
         }
     }
 
-    if (Logger::isDebug()) {
-        Logger::debug(EBERSPAECHER, "analog in: %d, water temperature: %fC, ext temperature: %f, power requested: %d, power on: %T",
-                status.analogIn[0], waterTemperature / 10.0f, extnernalTemperature, powerRequested, powerOn);
-    }
+//    if (Logger::isDebug()) {
+//        Logger::debug(EBERSPAECHER, "analog in: %d, water temperature: %fC, ext temperature: %f, power requested: %d, power on: %T",
+//                status.analogIn[0], waterTemperature / 10.0f, extnernalTemperature, powerRequested, powerOn);
+//    }
 }
 
 /*
@@ -205,10 +206,12 @@ void EberspaecherHeater::sendControl()
             return;
         }
     } else {
-        // request zero power
-        frameControl.data.byte[1] = 0;
-        canHandlerCar.sendFrame(frameControl);
-        running = false;
+        if (running) {
+            // request zero power
+            frameControl.data.byte[1] = 0;
+            canHandlerCar.sendFrame(frameControl);
+            running = false;
+        }
         return;
     }
 
@@ -224,7 +227,6 @@ void EberspaecherHeater::sendControl()
 //        canHandlerCar.logFrame(frameCmd4);
 //        canHandlerCar.logFrame(frameCmd5);
     }
-
     canHandlerCar.sendFrame(frameKeepAlive);
     canHandlerCar.sendFrame(frameCmd1);
     canHandlerCar.sendFrame(frameControl);
@@ -239,6 +241,7 @@ void EberspaecherHeater::sendControl()
  */
 void EberspaecherHeater::processStatus(uint8_t *data)
 {
+    Logger::debug(EBERSPAECHER, "processing status message");
     //TODO: implement processing of bits and bytes
 }
 
