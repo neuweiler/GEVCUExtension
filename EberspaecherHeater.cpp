@@ -169,11 +169,11 @@ void EberspaecherHeater::calculatePower()
     }
 
     // power on the device only if the external temperature is lower than or equal to configured temperature
-//    if (extnernalTemperature <= config->extTemperatureOn) {
+    if (extnernalTemperature <= config->extTemperatureOn) {
         powerOn = true;
-//    } else {
-//        powerOn = false;
-//    }
+    } else {
+        powerOn = false;
+    }
 
     // calculate power
     if (waterTemperature <= config->targetTemperature * 10) {
@@ -186,10 +186,10 @@ void EberspaecherHeater::calculatePower()
         }
     }
 
-//    if (Logger::isDebug()) {
-//        Logger::debug(EBERSPAECHER, "analog in: %d, water temperature: %fC, ext temperature: %f, power requested: %d, power on: %T",
-//                status.analogIn[0], waterTemperature / 10.0f, extnernalTemperature, powerRequested, powerOn);
-//    }
+    if (Logger::isDebug()) {
+        Logger::debug(EBERSPAECHER, "analog in: %d, water temperature: %fC, ext temperature: %f, power requested: %d, power on: %T",
+                status.analogIn[0], waterTemperature / 10.0f, extnernalTemperature, powerRequested, powerOn);
+    }
 }
 
 /*

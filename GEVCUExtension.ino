@@ -13,7 +13,7 @@ void setup()
     SerialUSB.begin(CFG_SERIAL_SPEED);
 
     // delay startup to have enough time to activate logging
-    for (int i = 10; i > 0; i--) {
+    for (int i = 5; i > 0; i--) {
         SerialUSB.println(i);
         delay(1000);
     }
