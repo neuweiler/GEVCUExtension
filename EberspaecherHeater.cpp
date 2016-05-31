@@ -169,7 +169,7 @@ void EberspaecherHeater::calculatePower()
     }
 
     // power on the device only if the external temperature is lower than or equal to configured temperature
-    if (extnernalTemperature <= config->extTemperatureOn) {
+    if (extnernalTemperature <= config->extTemperatureOn || config->extTemperatureOn == 255) {
         powerOn = true;
     } else {
         powerOn = false;

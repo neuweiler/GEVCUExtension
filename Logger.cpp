@@ -398,6 +398,14 @@ void Logger::printDeviceName(DeviceId deviceId)
         SerialUSB.print("TEMPERATURE");
         break;
 
+    case FLOW_METER_COOLING:
+        SerialUSB.print("FLOWCOOL");
+        break;
+
+    case FLOW_METER_HEATER:
+        SerialUSB.print("FLOWHEAT");
+        break;
+
     case INVALID:
         SerialUSB.print("invalid");
     }

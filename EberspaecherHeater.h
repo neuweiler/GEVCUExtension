@@ -38,7 +38,7 @@ public:
     uint16_t maxPower; // maximum power in watt (0 - 6000)
     uint8_t targetTemperature; // desired water temperature in deg C (0 - 100)
     uint8_t deratingTemperature; // temperature at which power will be derated from maxPower to 0% at target temperature in deg C (0 - 100, 255 = ignore)
-    uint8_t extTemperatureOn; // external temperature at which heater is turned on in deg C (0 - 40, 999 = ignore)
+    uint8_t extTemperatureOn; // external temperature at which heater is turned on in deg C (0 - 40, 255 = ignore)
     uint8_t extTemperatureSensorAddress[8]; // address of external temperature sensor
 };
 

@@ -14,6 +14,8 @@
 #include "Temperature.h"
 #include "EberspaecherHeater.h"
 #include "CanIO.h"
+#include "SerialConsole.h"
+#include "FlowMeter.h"
 
 #ifdef __cplusplus
 extern "C"

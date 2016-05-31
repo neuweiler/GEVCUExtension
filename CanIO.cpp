@@ -48,9 +48,9 @@ void CanIO::setup()
     resetOutput(); // safety: make sure no output is activated when setting the pin mode
 
     // initialize digital output
-    setPinMode(config->preChargeRelayOutput);
+    setPinMode(config->prechargeRelayOutput);
     setPinMode(config->mainContactorOutput);
-    setPinMode(config->secondayContactorOutput);
+    setPinMode(config->secondaryContactorOutput);
     setPinMode(config->fastChargeContactorOutput);
 
     setPinMode(config->enableMotorOutput);
@@ -65,8 +65,8 @@ void CanIO::setup()
 
     setPinMode(config->brakeLightOutput);
     setPinMode(config->reverseLightOutput);
-    setPinMode(config->warningOutput);
-    setPinMode(config->powerLimitationOutput);
+    setPinMode(config->powerSteeringOutput);
+    setPinMode(config->unusedOutput);
     resetOutput(); // safety: to be 100% sure no relay pulls by accident, reset the output again
 
     ready = true;
@@ -127,9 +127,9 @@ void CanIO::resetOutput()
 {
     CanIOConfiguration *config = (CanIOConfiguration *) getConfiguration();
 
-    setOutput(config->preChargeRelayOutput, false);
+    setOutput(config->prechargeRelayOutput, false);
     setOutput(config->mainContactorOutput, false);
-    setOutput(config->secondayContactorOutput, false);
+    setOutput(config->secondaryContactorOutput, false);
     setOutput(config->fastChargeContactorOutput, false);
 
     setOutput(config->enableMotorOutput, false);
@@ -144,8 +144,8 @@ void CanIO::resetOutput()
 
     setOutput(config->brakeLightOutput, false);
     setOutput(config->reverseLightOutput, false);
-    setOutput(config->warningOutput, false);
-    setOutput(config->powerLimitationOutput, false);
+    setOutput(config->powerSteeringOutput, false);
+    setOutput(config->unusedOutput, false);
 }
 
 /*
@@ -186,9 +186,9 @@ void CanIO::processGevcuStatus(CAN_FRAME *frame)
 
     uint16_t logicIO = frame->data.s1;
 
-    setOutput(config->preChargeRelayOutput, logicIO & preChargeRelay);
+    setOutput(config->prechargeRelayOutput, logicIO & preChargeRelay);
     setOutput(config->mainContactorOutput, logicIO & mainContactor);
-    setOutput(config->secondayContactorOutput, logicIO & secondaryContactor);
+    setOutput(config->secondaryContactorOutput, logicIO & secondaryContactor);
     setOutput(config->fastChargeContactorOutput, logicIO & fastChargeContactor);
 
     setOutput(config->enableMotorOutput, logicIO & enableMotor);
@@ -203,18 +203,16 @@ void CanIO::processGevcuStatus(CAN_FRAME *frame)
 
     setOutput(config->brakeLightOutput, logicIO & brakeLight);
     setOutput(config->reverseLightOutput, logicIO & reverseLight);
-    setOutput(config->warningOutput, logicIO & warning);
-    setOutput(config->powerLimitationOutput, logicIO & powerLimitation);
+    setOutput(config->powerSteeringOutput, logicIO & powerSteering);
+    setOutput(config->unusedOutput, logicIO & unused);
 
     if (Logger::isDebug()) {
-        Logger::debug(CAN_IO, "pre-charge\t: %t, main cont\t\t: %t, sec cont\t: %t, fast charge\t: %t", logicIO & preChargeRelay, logicIO & mainContactor,
-                logicIO & secondaryContactor, logicIO & fastChargeContactor);
-        Logger::debug(CAN_IO, "enable motor\t: %t, enable charger\t: %t, enable DCDC\t: %t, enable heater\t: %t", logicIO & enableMotor,
-                logicIO & enableCharger, logicIO & enableDcDc, logicIO & enableHeater);
-        Logger::debug(CAN_IO, "heater valve\t: %t, heater pump\t: %t, cooling pump\t: %t, cooling fan\t: %t", logicIO & heaterValve, logicIO & heaterPump,
-                logicIO & coolingPump, logicIO & coolingFan);
-        Logger::debug(CAN_IO, "brake\t\t: %t, reverse\t: %t, warning\t: %t, power limit\t: %t", logicIO & brakeLight, logicIO & reverseLight, logicIO & warning,
-                logicIO & powerLimitation);
+        Logger::debug(CAN_IO,
+                "state: %d, pre-charge: %t, main: %t, secondary: %t, fast chrg: %t, motor: %t, charger: %t, DCDC: %t, heater: %t, valve: %t, pump: %t, cooling pump: %t, fan: %t, brake: %t, reverse: %t, power steer: %t, unused: %t",
+                frame->data.byte[4], logicIO & preChargeRelay, logicIO & mainContactor, logicIO & secondaryContactor, logicIO & fastChargeContactor,
+                logicIO & enableMotor, logicIO & enableCharger, logicIO & enableDcDc, logicIO & enableHeater, logicIO & heaterValve,
+                logicIO & heaterPump, logicIO & coolingPump, logicIO & coolingFan, logicIO & brakeLight, logicIO & reverseLight,
+                logicIO & powerSteering, logicIO & unused);
     }
 }
 
@@ -262,9 +260,9 @@ void CanIO::loadConfiguration()
     if (prefsHandler->checksumValid()) { //checksum is good, read in the values stored in EEPROM
 #endif
         uint8_t temp;
-        prefsHandler->read(EECAN_PRE_CHARGE_RELAY_OUTPUT, &config->preChargeRelayOutput);
+        prefsHandler->read(EECAN_PRE_CHARGE_RELAY_OUTPUT, &config->prechargeRelayOutput);
         prefsHandler->read(EECAN_MAIN_CONTACTOR_OUTPUT, &config->mainContactorOutput);
-        prefsHandler->read(EECAN_SECONDAY_CONTACTOR_OUTPUT, &config->secondayContactorOutput);
+        prefsHandler->read(EECAN_SECONDAY_CONTACTOR_OUTPUT, &config->secondaryContactorOutput);
         prefsHandler->read(EECAN_FAST_CHARGE_CONTACTOR_OUTPUT, &config->fastChargeContactorOutput);
 
         prefsHandler->read(EECAN_ENABLE_MOTOR_OUTPUT, &config->enableMotorOutput);
@@ -279,15 +277,12 @@ void CanIO::loadConfiguration()
 
         prefsHandler->read(EECAN_BRAKE_LIGHT_OUTPUT, &config->brakeLightOutput);
         prefsHandler->read(EECAN_REVERSE_LIGHT_OUTPUT, &config->reverseLightOutput);
-        prefsHandler->read(EECAN_WARNING_OUTPUT, &config->warningOutput);
-        prefsHandler->read(EECAN_POWER_LIMITATION_OUTPUT, &config->powerLimitationOutput);
-
-        prefsHandler->read(EECAN_yyy, &temp);
-        config->yyy = (temp != 0);
+        prefsHandler->read(EECAN_WARNING_OUTPUT, &config->powerSteeringOutput);
+        prefsHandler->read(EECAN_POWER_LIMITATION_OUTPUT, &config->unusedOutput);
     } else { //checksum invalid, reinitialize values and store to EEPROM
-        config->preChargeRelayOutput = 22;
+        config->prechargeRelayOutput = 22;
         config->mainContactorOutput = 23;
-        config->secondayContactorOutput = 24;
+        config->secondaryContactorOutput = 24;
         config->fastChargeContactorOutput = 25;
 
         config->enableMotorOutput = 29;
@@ -302,18 +297,18 @@ void CanIO::loadConfiguration()
 
         config->brakeLightOutput = 34;
         config->reverseLightOutput = 35;
-        config->warningOutput = 36;
-        config->powerLimitationOutput = 37;
+        config->powerSteeringOutput = 36;
+        config->unusedOutput = 37;
         saveConfiguration();
     }
-    Logger::info(CAN_IO, "preChargeRelay: %d, mainContactor: %d, secondaryContactor:%d, fastChargeContactor: %d", config->preChargeRelayOutput,
-            config->mainContactorOutput, config->secondayContactorOutput, config->fastChargeContactorOutput);
+    Logger::info(CAN_IO, "prechargeRelay: %d, mainContactor: %d, secondaryContactor:%d, fastChargeContactor: %d", config->prechargeRelayOutput,
+            config->mainContactorOutput, config->secondaryContactorOutput, config->fastChargeContactorOutput);
     Logger::info(CAN_IO, "enableMotor: %d, enableCharger: %d, enableDcDc:%d, enableHeater: %d", config->enableMotorOutput,
             config->enableChargerOutput, config->enableDcDcOutput, config->enableHeaterOutput);
     Logger::info(CAN_IO, "heaterValve: %d, heaterPump: %d, coolingPump:%d, coolingFan: %d", config->heaterValveOutput, config->heaterPumpOutput,
             config->coolingPumpOutput, config->coolingFanOutput);
-    Logger::info(CAN_IO, "brakeLight: %d, reverseLight: %d, warning:%d, powerLimitation: %d", config->brakeLightOutput, config->reverseLightOutput,
-            config->warningOutput, config->powerLimitationOutput);
+    Logger::info(CAN_IO, "brakeLight: %d, reverseLight: %d, powerSteering:%d, unused: %d", config->brakeLightOutput, config->reverseLightOutput,
+            config->powerSteeringOutput, config->unusedOutput);
 }
 
 /*
@@ -325,9 +320,9 @@ void CanIO::saveConfiguration()
 
     Device::saveConfiguration(); // call parent
 
-    prefsHandler->write(EECAN_PRE_CHARGE_RELAY_OUTPUT, config->preChargeRelayOutput);
+    prefsHandler->write(EECAN_PRE_CHARGE_RELAY_OUTPUT, config->prechargeRelayOutput);
     prefsHandler->write(EECAN_MAIN_CONTACTOR_OUTPUT, config->mainContactorOutput);
-    prefsHandler->write(EECAN_SECONDAY_CONTACTOR_OUTPUT, config->secondayContactorOutput);
+    prefsHandler->write(EECAN_SECONDAY_CONTACTOR_OUTPUT, config->secondaryContactorOutput);
     prefsHandler->write(EECAN_FAST_CHARGE_CONTACTOR_OUTPUT, config->fastChargeContactorOutput);
 
     prefsHandler->write(EECAN_ENABLE_MOTOR_OUTPUT, config->enableMotorOutput);
@@ -342,9 +337,8 @@ void CanIO::saveConfiguration()
 
     prefsHandler->write(EECAN_BRAKE_LIGHT_OUTPUT, config->brakeLightOutput);
     prefsHandler->write(EECAN_REVERSE_LIGHT_OUTPUT, config->reverseLightOutput);
-    prefsHandler->write(EECAN_WARNING_OUTPUT, config->warningOutput);
-    prefsHandler->write(EECAN_POWER_LIMITATION_OUTPUT, config->powerLimitationOutput);
+    prefsHandler->write(EECAN_WARNING_OUTPUT, config->powerSteeringOutput);
+    prefsHandler->write(EECAN_POWER_LIMITATION_OUTPUT, config->unusedOutput);
 
-    prefsHandler->write(EECAN_yyy, (uint8_t) (config->yyy ? 1 : 0));
     prefsHandler->saveChecksum();
 }

@@ -1,5 +1,5 @@
 /*
- * DeviceTypes.h
+ * SerialConsole.h
  *
  Copyright (c) 2013 Collin Kidder, Michael Neuweiler, Charles Galpin
 
@@ -24,32 +24,52 @@
 
  */
 
-#ifndef DEVICE_TYPES_H_
-#define DEVICE_TYPES_H_
+#ifndef SERIALCONSOLE_H_
+#define SERIALCONSOLE_H_
 
-enum DeviceType
+#include "config.h"
+#include "Heartbeat.h"
+#include "MemCache.h"
+#include "config.h"
+#include "DeviceManager.h"
+#include "CanIO.h"
+#include "EberspaecherHeater.h"
+#include "Temperature.h"
+#include "FlowMeter.h"
+
+class SerialConsole
 {
-    DEVICE_ANY,
-    DEVICE_MISC,
-    DEVICE_SENSOR,
-    DEVICE_HEATER,
-    DEVICE_IO,
-    DEVICE_FLOW_METER,
-    DEVICE_NONE
+public:
+    SerialConsole();
+    void loop();
+    void printMenu();
+
+protected:
+    enum CONSOLE_STATE
+    {
+        STATE_ROOT_MENU
+    };
+
+private:
+    bool handlingEvent;
+    char cmdBuffer[80];
+    int ptrBuffer;
+    int state;
+
+    void serialEvent();
+    void sendWifiCommand(String command, String parameter);
+    void handleConsoleCmd();
+    void handleShortCmd();
+    void handleConfigCmd();
+    bool handleConfigCmdCanIO(String command, long value);
+    bool handleConfigCmdHeater(String command, long value);
+    bool handleConfigCmdFlowMeter(String command, long value);
+    bool handleConfigCmdSystem(String command, long value);
+    void printMenuCanIO();
+    void printMenuHeater();
+    void printMenuFlowMeter();
 };
 
-enum DeviceId
-{ //unique device ID for every piece of hardware possible
-    NEW = 0x0000,
-    SYSTEM = 0x5000,
-    HEARTBEAT = 0x5001,
-    MEMCACHE = 0x5002,
-    EBERSPAECHER = 0x6000,
-    CAN_IO = 0x6100,
-    TEMPERATURE = 0x6200,
-    FLOW_METER_COOLING = 0x6300,
-    FLOW_METER_HEATER = 0x6301,
-    INVALID = 0xFFFF
-};
+extern SerialConsole serialConsole;
 
-#endif /* DEVICE_TYPES_H_ */
+#endif /* SERIALCONSOLE_H_ */

@@ -48,9 +48,9 @@
 class CanIOConfiguration: public DeviceConfiguration
 {
 public:
-    uint8_t preChargeRelayOutput;
+    uint8_t prechargeRelayOutput;
     uint8_t mainContactorOutput;
-    uint8_t secondayContactorOutput;
+    uint8_t secondaryContactorOutput;
     uint8_t fastChargeContactorOutput;
 
     uint8_t enableMotorOutput;
@@ -65,10 +65,8 @@ public:
 
     uint8_t brakeLightOutput;
     uint8_t reverseLightOutput;
-    uint8_t warningOutput;
-    uint8_t powerLimitationOutput;
-
-    bool yyy; // flag ...
+    uint8_t powerSteeringOutput;
+    uint8_t unusedOutput;
 };
 
 class CanIO: public Device, CanObserver
@@ -113,8 +111,8 @@ public:
 
         brakeLight = 1 << 12, // 0x1000, data[2], Motorola bit 3
         reverseLight = 1 << 13, // 0x2000, data[2], Motorola bit 2
-        warning = 1 << 14, // 0x4000, data[2], Motorola bit 1
-        powerLimitation = 1 << 15  // 0x8000, data[2], Motorola bit 0
+        powerSteering = 1 << 14, // 0x4000, data[2], Motorola bit 1
+        unused = 1 << 15  // 0x8000, data[2], Motorola bit 0
     };
 
     CanIO();

@@ -131,6 +131,10 @@
 #define EECAN_REVERSE_LIGHT_OUTPUT          23 // 1 byte, output pin
 #define EECAN_WARNING_OUTPUT                24 // 1 byte, output pin
 #define EECAN_POWER_LIMITATION_OUTPUT       25 // 1 byte, output pin
-#define EECAN_yyy                          12 // 1 byte - flag...
+#define EECAN_yyy                           12 // 1 byte - flag...
+
+// flow meter data
+#define EEFLOW_CALIBRATION_FACTOR           10 // 2 bytes, value
+
 
 #endif
