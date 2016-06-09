@@ -97,7 +97,7 @@ Status::SystemState Status::setSystemState(SystemState newSystemState)
             }
             break;
         case charged:
-            if (newSystemState == ready) {
+            if (newSystemState == ready || newSystemState == shutdown) {
                 systemState = newSystemState;
             }
             break;
@@ -157,6 +157,8 @@ char *Status::systemStateToStr(SystemState state)
         return "charging";
     case charged:
         return "charged";
+    case shutdown:
+        return "shut-down";
     }
     Logger::error("the system state is invalid, contact your support!");
     return "invalid";
