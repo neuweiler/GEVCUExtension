@@ -22,7 +22,7 @@ void Temperature::setup()
 {
     Device::setup(); //call base class
 
-    Logger::info(TEMPERATURE, "locating temperature sensors...");
+    Logger::info(this, "locating temperature sensors...");
 
     TemperatureSensor::resetSearch();
     int i;
@@ -31,7 +31,7 @@ void Temperature::setup()
         if (devices[i] == NULL)
             break;
         byte *addr = devices[i]->getAddress();
-        Logger::info(TEMPERATURE, "found sensor #%d: addr=0x%x %x %x %x %x %x %x %x, %s", i, addr[0], addr[1], addr[2], addr[3], addr[4], addr[5], addr[6], addr[7], devices[i]->getTypeStr());
+        Logger::info(this, "found sensor #%d: addr=0x%#x %#x %#x %#x %#x %#x %#x %#x, %s", i, addr[0], addr[1], addr[2], addr[3], addr[4], addr[5], addr[6], addr[7], devices[i]->getTypeStr());
     }
     devices[i] = NULL;
     TemperatureSensor::prepareData();
@@ -76,7 +76,7 @@ void Temperature::sendTemperature()
         devices[i]->retrieveData();
         running = true;
         if (Logger::isDebug()) {
-            Logger::debug(TEMPERATURE, "sensor #%d: %f C", i, devices[i]->getTemperatureCelsius());
+            Logger::debug(this, "sensor #%d: %f C", i, devices[i]->getTemperatureCelsius());
         }
 
         int byteNum = -1;

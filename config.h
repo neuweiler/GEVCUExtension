@@ -34,7 +34,7 @@
 
 #include <due_can.h>
 
-#define CFG_VERSION "GEVCU extension 2016-05-26"
+#define CFG_VERSION "GEVCU Extension 2016-06-29"
 #define CFG_DEFAULT_LOGLEVEL Logger::Info
 
 /*
@@ -62,8 +62,8 @@
  */
 #define CFG_CAN0_SPEED CAN_BPS_500K // specify the speed of the CAN0 bus (EV)
 #define CFG_CAN1_SPEED CAN_BPS_33333 // specify the speed of the CAN1 bus (Car / SW-CAN)
-#define CFG_CAN0_NUM_TX_MAILBOXES 3 // how many of 8 mailboxes are used for TX for CAN0, rest is used for RX
-#define CFG_CAN1_NUM_TX_MAILBOXES 5 // how many of 8 mailboxes are used for TX for CAN1, rest is used for RX
+#define CFG_CAN0_NUM_TX_MAILBOXES 2 // how many of 8 mailboxes are used for TX for CAN0, rest is used for RX
+#define CFG_CAN1_NUM_TX_MAILBOXES 3 // how many of 8 mailboxes are used for TX for CAN1, rest is used for RX
 #define CFG_CAN_IO_MSG_TIMEOUT 1000 // milliseconds a can IO message may be missing before the device faults
 #define CFG_CAN1_HV_MODE_PIN 52 // pin to use to set SW-CAN chip to HV mode (for wake-up)
 #define CFG_CAN_TEMPERATURE_OFFSET 50 // offset for temperatures reported via CAN bus - must be the same as in GEVCU !
@@ -85,9 +85,10 @@
 #define CFG_DEV_MGR_MAX_DEVICES 20 // the maximum number of devices supported by the DeviceManager
 #define CFG_CAN_NUM_OBSERVERS 10 // maximum number of device subscriptions per CAN bus
 #define CFG_TIMER_NUM_OBSERVERS 9 // the maximum number of supported observers per timer
-#define CFG_TIMER_BUFFER_SIZE 100 // the size of the queueing buffer for TickHandler
-#define CFG_SERIAL_SEND_BUFFER_SIZE 50
+#define CFG_TIMER_BUFFER_SIZE 100 // the size of the queuing buffer for TickHandler
+#define CFG_SERIAL_SEND_BUFFER_SIZE 120
 #define CFG_MAX_NUM_TEMPERATURE_SENSORS 32
+#define CFG_LOG_BUFFER_SIZE 120 // size of log output messages
 
 /*
  * PIN ASSIGNMENT

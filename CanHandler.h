@@ -3,24 +3,24 @@
 
  Copyright (c) 2013 Collin Kidder, Michael Neuweiler, Charles Galpin
 
- Permission is hereby granted, free of charge, to any person obtaining
- a copy of this software and associated documentation files (the
- "Software"), to deal in the Software without restriction, including
- without limitation the rights to use, copy, modify, merge, publish,
- distribute, sublicense, and/or sell copies of the Software, and to
- permit persons to whom the Software is furnished to do so, subject to
- the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
 
- The above copyright notice and this permission notice shall be included
- in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
- CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 #ifndef CAN_HANDLER_H_
@@ -43,8 +43,7 @@ public:
 class CanHandler
 {
 public:
-    enum CanBusNode
-    {
+    enum CanBusNode {
         CAN_BUS_EV, // CAN0 is intended to be connected to the EV bus (controller, charger, etc.)
         CAN_BUS_CAR // CAN1 is intended to be connected to the car's high speed bus (the one with the ECU)
     };
@@ -52,6 +51,7 @@ public:
     CanHandler(CanBusNode busNumber);
     void setup();
     void attach(CanObserver *observer, uint32_t id, uint32_t mask, bool extended);
+    bool isAttached(CanObserver* observer, uint32_t id, uint32_t mask);
     void detach(CanObserver *observer, uint32_t id, uint32_t mask);
     void process();
     void prepareOutputFrame(CAN_FRAME *frame, uint32_t id);
@@ -60,8 +60,7 @@ public:
 protected:
 
 private:
-    struct CanObserverData
-    {
+    struct CanObserverData {
         uint32_t id;    // what id to listen to
         uint32_t mask;  // the CAN frame mask to listen to
         bool extended;  // are extended frames expected
@@ -74,7 +73,6 @@ private:
     CanObserverData observerData[CFG_CAN_NUM_OBSERVERS];    // Can observers
 
     int8_t findFreeObserverData();
-    int8_t findFreeMailbox();
 };
 
 extern CanHandler canHandlerEv;

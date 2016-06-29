@@ -37,17 +37,17 @@ class Status
 public:
     enum SystemState
     {
-        startup = 0, // the system is starting-up (next states: init, error)
-        init = 1, // the system is being initialized and is not ready for operation yet (next states: preCharge, ready, error)
-        preCharge = 2, // the system is initialized and executing the pre-charge cycle (next states: ready, error)
-        preCharged = 3, // the system is pre-charged, the pre-charge cycle is finished
+        startup     = 0, // the system is starting-up (next states: init, error)
+        init        = 1, // the system is being initialized and is not ready for operation yet (next states: preCharge, ready, error)
+        preCharge   = 2, // the system is initialized and executing the pre-charge cycle (next states: ready, error)
+        preCharged  = 3, // the system is pre-charged, the pre-charge cycle is finished
         batteryHeating = 4, // before charging, the batteries need to be heated
-        charging = 5, // the batteries are being charged
-        charged = 6, // the charging is finished
-        ready = 7, // the system is ready to accept commands but the motor controller is not enabled yet (next states: running, error)
-        running = 8, // the system is running and the motor controller is to be enabled (next states: ready, error)
+        charging    = 5, // the batteries are being charged
+        charged     = 6, // the charging is finished
+        ready       = 7, // the system is ready to accept commands but the motor controller is not enabled yet (next states: running, error)
+        running     = 8, // the system is running and the motor controller is to be enabled (next states: ready, error)
         shutdown    = 9, // the system is shutdown and must be restarted to get operational again
-        error = 99 // the system is in an error state and not operational (no power on motor, turn of power stage)
+        error       = 99 // the system is in an error state and not operational (no power on motor, turn of power stage)
     };
     uint16_t analogIn[4];
 

@@ -108,7 +108,7 @@ void FlowMeter::handleTick()
     oldTime = newTime;
 
     if (Logger::isDebug()) {
-        Logger::info(id, "flow: %dml/sec, total: %dml", flowMilliLiterPerSec, totalMilliLiter);
+        Logger::info(this, "flow: %dml/sec, total: %dml", flowMilliLiterPerSec, totalMilliLiter);
     }
     outputFrame.data.high = flowMilliLiterPerSec;
     outputFrame.data.low = totalMilliLiter;
@@ -168,7 +168,7 @@ void FlowMeter::loadConfiguration()
         config->calibrationFactor = 270; // some devices also give 450 pulses per liter
         saveConfiguration();
     }
-    Logger::info(id, "calibration factor: %d pulses per liter", config->calibrationFactor);
+    Logger::info(this, "calibration factor: %d pulses per liter", config->calibrationFactor);
 }
 
 /*

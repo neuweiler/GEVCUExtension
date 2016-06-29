@@ -98,7 +98,7 @@ void EberspaecherHeater::handleCanFrame(CAN_FRAME *frame)
  */
 void EberspaecherHeater::sendWakeup()
 {
-    Logger::debug(EBERSPAECHER, "sending wake-up signal");
+    Logger::debug(this, "sending wake-up signal");
     digitalWrite(CFG_CAN1_HV_MODE_PIN, LOW); // set HV mode
 
     // 0x100, False, 0, 00,00,00,00,00,00,00,00
@@ -187,7 +187,7 @@ void EberspaecherHeater::calculatePower()
     }
 
     if (Logger::isDebug()) {
-        Logger::debug(EBERSPAECHER, "analog in: %d, water temperature: %fC, ext temperature: %f, power requested: %d, power on: %T",
+        Logger::debug(this, "analog in: %d, water temperature: %fC, ext temperature: %f, power requested: %d, power on: %d",
                 status.analogIn[0], waterTemperature / 10.0f, extnernalTemperature, powerRequested, powerOn);
     }
 }
@@ -241,7 +241,7 @@ void EberspaecherHeater::sendControl()
  */
 void EberspaecherHeater::processStatus(uint8_t *data)
 {
-    Logger::debug(EBERSPAECHER, "processing status message");
+    Logger::debug(this, "processing status message");
     //TODO: implement processing of bits and bytes
 }
 
@@ -301,7 +301,7 @@ config->extTemperatureSensorAddress[7] = 0x49;
         memset(config->extTemperatureSensorAddress, 0, 8);
         saveConfiguration();
     }
-    Logger::info(EBERSPAECHER, "maxPower: %d, target temperature: %d deg C, ext temperature on: %d deg C", config->maxPower, config->targetTemperature, config->extTemperatureOn);
+    Logger::info(this, "maxPower: %d, target temperature: %d deg C, ext temperature on: %d deg C", config->maxPower, config->targetTemperature, config->extTemperatureOn);
 }
 
 /*

@@ -29,11 +29,11 @@
 
 #include <Arduino.h>
 #include "config.h"
+#include "Status.h"
 #include "DeviceTypes.h"
 #include "eeprom_layout.h"
 #include "PrefHandler.h"
 #include "Sys_Messages.h"
-#include "Status.h"
 
 class DeviceManager;
 

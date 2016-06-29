@@ -29,8 +29,10 @@
 Heartbeat::Heartbeat() :
         Device()
 {
+    prefsHandler = new PrefHandler(HEARTBEAT);
     led = false;
     dotCount = 0;
+    lastTickTime = 0;
     commonName = "Heartbeat";
 }
 
@@ -48,16 +50,23 @@ void Heartbeat::setup()
 
 void Heartbeat::handleTick()
 {
-    SerialUSB.print('.');
-    if ((++dotCount % 80) == 0) {
-        SerialUSB.println();
+    // Print a dot if no other output has been made since the last tick
+    if (Logger::getLastLogTime() < lastTickTime) {
+        SerialUSB.print('.');
+
+        if ((++dotCount % 80) == 0) {
+            SerialUSB.println();
+        }
     }
+
+    lastTickTime = millis();
 
     if (led) {
         digitalWrite(CFG_BLINK_LED, HIGH);
     } else {
         digitalWrite(CFG_BLINK_LED, LOW);
     }
+
     led = !led;
 }
 
@@ -71,3 +80,21 @@ DeviceId Heartbeat::getId()
     return HEARTBEAT;
 }
 
+void Heartbeat::loadConfiguration()
+{
+//    HeartbeatConfiguration *config = (HeartbeatConfiguration *) getConfiguration();
+
+    if (prefsHandler->checksumValid()) { //checksum is good, read in the values stored in EEPROM
+//      prefsHandler->read(EESYS_, &config->);
+    } else {
+        saveConfiguration();
+    }
+}
+
+void Heartbeat::saveConfiguration()
+{
+//    HeartbeatConfiguration *config = (HeartbeatConfiguration *) getConfiguration();
+
+//  prefsHandler->write(EESYS_, config->);
+    prefsHandler->saveChecksum();
+}
