@@ -111,11 +111,6 @@ Status::SystemState Status::setSystemState(SystemState newSystemState)
                 systemState = newSystemState;
             }
             break;
-        case error:
-            if (newSystemState == init) {
-                systemState = newSystemState;
-            }
-            break;
         }
     }
     if (systemState == newSystemState) {

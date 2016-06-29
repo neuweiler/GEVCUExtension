@@ -52,4 +52,15 @@ enum DeviceId
     INVALID = 0xFFFF
 };
 
+const DeviceId deviceIds[] = {
+        HEARTBEAT,
+        EBERSPAECHER,
+        CAN_IO,
+        TEMPERATURE,
+        FLOW_METER_COOLING,
+        FLOW_METER_HEATER
+};
+
+const uint8_t deviceIdsSize = (sizeof(deviceIds) / sizeof(DeviceId));
+
 #endif /* DEVICE_TYPES_H_ */

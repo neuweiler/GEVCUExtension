@@ -4,26 +4,26 @@
  * Abstracts away the particulars of how preferences are stored.
  * Transparently supports main and "last known good" storage and retrieval
  *
- Copyright (c) 2013 Collin Kidder, Michael Neuweiler, Charles Galpin
+Copyright (c) 2013 Collin Kidder, Michael Neuweiler, Charles Galpin
 
- Permission is hereby granted, free of charge, to any person obtaining
- a copy of this software and associated documentation files (the
- "Software"), to deal in the Software without restriction, including
- without limitation the rights to use, copy, modify, merge, publish,
- distribute, sublicense, and/or sell copies of the Software, and to
- permit persons to whom the Software is furnished to do so, subject to
- the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
 
- The above copyright notice and this permission notice shall be included
- in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
- CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
  */
 
@@ -50,23 +50,24 @@ PrefHandler::PrefHandler(DeviceId id_in)
             enabled = true;
         }
         base_address = EE_DEVICES_BASE + (EE_DEVICE_SIZE * position);
-        Logger::debug(deviceId, "Device ID %X was found in device table at entry %i", (int) deviceId, position);
+        Logger::debug("Device ID %#x was found in device table at entry %i", (int) deviceId, position);
         return;
     }
 
     //if we got here then there was no entry for this device in the table yet.
-    //try to find an empty spot and place it there - not enabled though.
+    //try to find an empty spot and place it there.
     position = findDevice(NEW);
     if (position > -1) {
-        memCache.Write(EE_DEVICE_TABLE + (2 * position), (uint16_t) deviceId);
         base_address = EE_DEVICES_BASE + (EE_DEVICE_SIZE * position);
-        Logger::debug(deviceId, "Device ID: %X was placed into device table at entry: %i", (int) deviceId, position);
+        lkg_address = EE_MAIN_OFFSET;
+        memCache.Write(EE_DEVICE_TABLE + (2 * position), (uint16_t)deviceId);
+        Logger::debug("Device ID: %#x was placed into device table at entry: %i", (int) deviceId, position);
         return;
     }
 
     //we found no matches and could not allocate a space. This is bad. Error out here
     base_address = 0xF0F0;
-    Logger::error(deviceId, "PrefManager - Device Table Full!!! Unable to store configuration!");
+    Logger::error("PrefManager - Device Table Full (Device ID: %#x) !!!", deviceId);
 }
 
 PrefHandler::~PrefHandler()
@@ -85,7 +86,7 @@ void PrefHandler::initDeviceTable()
         return;
     }
 
-    Logger::info(deviceId, "Initializing EEPROM device table");
+    Logger::debug("Initializing EEPROM device table");
 
     //initialize table with zeros
     id = 0;
@@ -103,7 +104,7 @@ void PrefHandler::initDeviceTable()
  */
 bool PrefHandler::isEnabled()
 {
-    return enabled;
+	return enabled;
 }
 
 /*
@@ -111,9 +112,9 @@ bool PrefHandler::isEnabled()
  */
 bool PrefHandler::setEnabled(bool en)
 {
-    uint16_t id = deviceId;
+	uint16_t id = deviceId;
 
-    enabled = en;
+	enabled = en;
 
     if (enabled) {
         id |= 0x8000; //set enabled bit
@@ -121,7 +122,7 @@ bool PrefHandler::setEnabled(bool en)
         id &= 0x7FFF; //clear enabled bit
     }
 
-    return memCache.Write(EE_DEVICE_TABLE + (2 * position), id);
+	return memCache.Write(EE_DEVICE_TABLE + (2 * position), id);
 }
 
 /*
@@ -256,10 +257,10 @@ bool PrefHandler::checksumValid()
     memCache.Read(EE_CHECKSUM + base_address + lkg_address, &stored_chk);
     calc_chk = calcChecksum();
     if (stored_chk == calc_chk) {
-        Logger::debug(deviceId, "valid checksum, using stored config values");
+        Logger::debug("%#x valid checksum, using stored config values", deviceId);
         return true;
     } else {
-        Logger::warn(deviceId, "invalid checksum, using hard coded config values (stored: %X, calc: %X)", stored_chk, calc_chk);
+        Logger::warn("#x invalid checksum, using hard coded config values (stored: %#x, calc: %#x", deviceId, stored_chk, calc_chk);
         return false;
     }
 }

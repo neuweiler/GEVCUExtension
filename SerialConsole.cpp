@@ -47,7 +47,7 @@ void SerialConsole::loop()
 void SerialConsole::printMenu()
 {
     //Show build # here as well in case people are using the native port and don't get to see the start up messages
-    Logger::console("\nBuild number: %i", CFG_VERSION);
+    Logger::console("\nBuild number: %d", CFG_VERSION);
     Logger::console("System State: %s", status.systemStateToStr(status.getSystemState()));
     Logger::console("System Menu:\n");
     Logger::console("Enable line endings of some sort (LF, CR, CRLF)\n");
@@ -56,7 +56,7 @@ void SerialConsole::printMenu()
     Logger::console("S = show list of devices");
 
     Logger::console("\nConfig Commands (enter command=newvalue)\n");
-    Logger::console("LOGLEVEL=%i - set log level (0=debug, 1=info, 2=warn, 3=error, 4=off)", Logger::getLogLevel());
+    Logger::console("LOGLEVEL=%d - set log level (0=debug, 1=info, 2=warn, 3=error, 4=off)", Logger::getLogLevel());
 
     deviceManager.printDeviceList();
 
@@ -73,25 +73,25 @@ void SerialConsole::printMenuCanIO()
         CanIOConfiguration *config = (CanIOConfiguration *) canIO->getConfiguration();
 
         Logger::console("\nCAN I/O\n");
-        Logger::console("PRELAY=%i - Digital output to use for precharge contactor (255 to disable)", config->prechargeRelayOutput);
-        Logger::console("MRELAY=%i - Digital output to use for main contactor (255 to disable)", config->mainContactorOutput);
-        Logger::console("NRELAY=%i - Digital output to use for secondary contactor (255 to disable)", config->secondaryContactorOutput);
-        Logger::console("FRELAY=%i - Digital output to use for fast charge contactor (255 to disable)\n", config->fastChargeContactorOutput);
+        Logger::console("PRELAY=%d - Digital output to use for precharge contactor (255 to disable)", config->prechargeRelayOutput);
+        Logger::console("MRELAY=%d - Digital output to use for main contactor (255 to disable)", config->mainContactorOutput);
+        Logger::console("NRELAY=%d - Digital output to use for secondary contactor (255 to disable)", config->secondaryContactorOutput);
+        Logger::console("FRELAY=%d - Digital output to use for fast charge contactor (255 to disable)\n", config->fastChargeContactorOutput);
 
-        Logger::console("ENABLEM=%i - Digital output to use for enable motor signal (255 to disable)", config->enableMotorOutput);
-        Logger::console("ENABLEC=%i - Digital output to use for enable charger signal (255 to disable)", config->enableChargerOutput);
-        Logger::console("ENABLED=%i - Digital output to use for enable dc-dc converter signal (255 to disable)", config->enableDcDcOutput);
-        Logger::console("ENABLEH=%i - Digital output to use for enable heater signal (255 to disable)\n", config->enableHeaterOutput);
+        Logger::console("ENABLEM=%d - Digital output to use for enable motor signal (255 to disable)", config->enableMotorOutput);
+        Logger::console("ENABLEC=%d - Digital output to use for enable charger signal (255 to disable)", config->enableChargerOutput);
+        Logger::console("ENABLED=%d - Digital output to use for enable dc-dc converter signal (255 to disable)", config->enableDcDcOutput);
+        Logger::console("ENABLEH=%d - Digital output to use for enable heater signal (255 to disable)\n", config->enableHeaterOutput);
 
-        Logger::console("HEATVALV=%i - Digital output to actuate heater valve (255 to disable)", config->heaterValveOutput);
-        Logger::console("HEATPUMP=%i - Digital output to turn on heater pump (255 to disable)", config->heaterPumpOutput);
-        Logger::console("COOLPUMP=%i - Digital output to turn on cooling pump (255 to disable)", config->coolingPumpOutput);
-        Logger::console("COOLFAN=%i - Digital output to turn on cooling fan (255 to disable)", config->coolingFanOutput);
+        Logger::console("HEATVALV=%d - Digital output to actuate heater valve (255 to disable)", config->heaterValveOutput);
+        Logger::console("HEATPUMP=%d - Digital output to turn on heater pump (255 to disable)", config->heaterPumpOutput);
+        Logger::console("COOLPUMP=%d - Digital output to turn on cooling pump (255 to disable)", config->coolingPumpOutput);
+        Logger::console("COOLFAN=%d - Digital output to turn on cooling fan (255 to disable)", config->coolingFanOutput);
 
-        Logger::console("BRAKELT=%i - Digital output to use for brake light (255 to disable)", config->brakeLightOutput);
-        Logger::console("REVLT=%i - Digital output to use for reverse light (255 to disable)", config->reverseLightOutput);
-        Logger::console("PWRST=%i - Digital output to use for power steering (255 to disable)", config->powerSteeringOutput);
-//        Logger::console("TBD=%i - Digital output to use for xxxx (255 to disable)", config->unusedOutput);
+        Logger::console("BRAKELT=%d - Digital output to use for brake light (255 to disable)", config->brakeLightOutput);
+        Logger::console("REVLT=%d - Digital output to use for reverse light (255 to disable)", config->reverseLightOutput);
+        Logger::console("PWRST=%d - Digital output to use for power steering (255 to disable)", config->powerSteeringOutput);
+//        Logger::console("TBD=%d - Digital output to use for xxxx (255 to disable)", config->unusedOutput);
     }
 }
 
@@ -103,13 +103,12 @@ void SerialConsole::printMenuHeater()
         EberspaecherHeaterConfiguration *config = (EberspaecherHeaterConfiguration *) heater->getConfiguration();
 
         Logger::console("\HEATER CONTROLS\n");
-        Logger::console("HTMAXW=%i - Maximum power (0 - 6000 Watt)", config->maxPower);
-        Logger::console("HTTEMP=%i - Desired water temperature (0 - 100 deg C)", config->targetTemperature);
-        Logger::console(
-                "HTDERT=%i - Temperature at which power will be derated from maxPower to 0% at target temperature (0 - 100 deg C, 255 = ignore)",
+        Logger::console("HTMAXW=%d - Maximum power (0 - 6000 Watt)", config->maxPower);
+        Logger::console("HTTEMP=%d - Desired water temperature (0 - 100 deg C)", config->targetTemperature);
+        Logger::console("HTDERT=%d - Temperature at which power will be derated from maxPower to 0%% at target temperature (0 - 100 deg C, 255 = ignore)",
                 config->deratingTemperature);
-        Logger::console("HTTON=%i - external temperature at which heater is turned on (0 - 40 deg C, 255 = ignore)", config->extTemperatureOn);
-        Logger::console("HTTADDR=%X,%X,%X,%X,%X,%X,%X,%X, - address of external temperature sensor", config->extTemperatureSensorAddress[0],
+        Logger::console("HTTON=%d - external temperature at which heater is turned on (0 - 40 deg C, 255 = ignore)", config->extTemperatureOn);
+        Logger::console("HTTADDR=%#x,%#x,%#x,%#x,%#x,%#x,%#x,%#x, - address of external temperature sensor", config->extTemperatureSensorAddress[0],
                 config->extTemperatureSensorAddress[1], config->extTemperatureSensorAddress[2], config->extTemperatureSensorAddress[3],
                 config->extTemperatureSensorAddress[4], config->extTemperatureSensorAddress[5], config->extTemperatureSensorAddress[6],
                 config->extTemperatureSensorAddress[7]);
@@ -125,13 +124,13 @@ void SerialConsole::printMenuFlowMeter()
         FlowMeterConfiguration *config = (FlowMeterConfiguration *) heating->getConfiguration();
 
         Logger::console("\FLOW METER - HEATING CONTROLS\n");
-        Logger::console("FMHCALIB=%i - Calibration Factor (pulses per liter)", config->calibrationFactor);
+        Logger::console("FMHCALIB=%d - Calibration Factor (pulses per liter)", config->calibrationFactor);
     }
     if (cooling && cooling->getConfiguration()) {
         FlowMeterConfiguration *config = (FlowMeterConfiguration *) cooling->getConfiguration();
 
         Logger::console("\FLOW METER - COOLING CONTROLS\n");
-        Logger::console("FMCCALIB=%i - Calibration Factor (pulses per liter)", config->calibrationFactor);
+        Logger::console("FMCCALIB=%d - Calibration Factor (pulses per liter)", config->calibrationFactor);
     }
 }
 
@@ -186,7 +185,7 @@ void SerialConsole::handleConfigCmd()
     int value;
     bool updateWifi = true;
 
-    //Logger::debug("Cmd size: %i", ptrBuffer);
+    //Logger::debug("Cmd size: %d", ptrBuffer);
     if (ptrBuffer < 6) {
         return;    //4 digit command, =, value is at least 6 characters
     }
@@ -229,67 +228,67 @@ bool SerialConsole::handleConfigCmdCanIO(String command, long value)
 
         if (command == String("PRELAY")) {
             value = constrain(value, 0, 255);
-            Logger::console("Setting precharge relay to output %i", value);
+            Logger::console("Setting precharge relay to output %d", value);
             config->prechargeRelayOutput = value;
         } else if (command == String("MRELAY")) {
             value = constrain(value, 0, 255);
-            Logger::console("Setting main contactor to output %i", value);
+            Logger::console("Setting main contactor to output %d", value);
             config->mainContactorOutput = value;
         } else if (command == String("NRELAY")) {
             value = constrain(value, 0, 255);
-            Logger::console("Setting secondary contactor to output %i", value);
+            Logger::console("Setting secondary contactor to output %d", value);
             config->secondaryContactorOutput = value;
         } else if (command == String("FRELAY")) {
             value = constrain(value, 0, 255);
-            Logger::console("Setting fast charge contactor to output %i", value);
+            Logger::console("Setting fast charge contactor to output %d", value);
             config->fastChargeContactorOutput = value;
         } else if (command == String("ENABLEM")) {
             value = constrain(value, 0, 255);
-            Logger::console("Setting enable motor signal to output %i", value);
+            Logger::console("Setting enable motor signal to output %d", value);
             config->enableMotorOutput = value;
         } else if (command == String("ENABLEC")) {
             value = constrain(value, 0, 255);
-            Logger::console("Setting enable charger signal to output %i", value);
+            Logger::console("Setting enable charger signal to output %d", value);
             config->enableChargerOutput = value;
         } else if (command == String("ENABLED")) {
             value = constrain(value, 0, 255);
-            Logger::console("Setting enable DC-DC converter signal to output %i", value);
+            Logger::console("Setting enable DC-DC converter signal to output %d", value);
             config->enableDcDcOutput = value;
         } else if (command == String("ENABLEH")) {
             value = constrain(value, 0, 255);
-            Logger::console("Setting enable heater signal to output %i", value);
+            Logger::console("Setting enable heater signal to output %d", value);
             config->enableHeaterOutput = value;
         } else if (command == String("HEATVALV")) {
             value = constrain(value, 0, 255);
-            Logger::console("Setting heater valve signal output %i", value);
+            Logger::console("Setting heater valve signal output %d", value);
             config->heaterValveOutput = value;
         } else if (command == String("HEATPUMP")) {
             value = constrain(value, 0, 255);
-            Logger::console("Setting heater pump signal to output %i", value);
+            Logger::console("Setting heater pump signal to output %d", value);
             config->heaterPumpOutput = value;
         } else if (command == String("COOLPUMP")) {
             value = constrain(value, 0, 255);
-            Logger::console("Setting cooling pump signal to output %i", value);
+            Logger::console("Setting cooling pump signal to output %d", value);
             config->coolingPumpOutput = value;
         } else if (command == String("COOLFAN")) {
             value = constrain(value, 0, 255);
-            Logger::console("Setting cooling fan signal to output %i", value);
+            Logger::console("Setting cooling fan signal to output %d", value);
             config->coolingFanOutput = value;
         } else if (command == String("BRAKELT")) {
             value = constrain(value, 0, 255);
-            Logger::console("Brake light signal set to output %i.", value);
+            Logger::console("Brake light signal set to output %d.", value);
             config->brakeLightOutput = value;
         } else if (command == String("REVLT")) {
             value = constrain(value, 0, 255);
-            Logger::console("Reverse light signal set to output %i.", value);
+            Logger::console("Reverse light signal set to output %d.", value);
             config->reverseLightOutput = value;
         } else if (command == String("PWRST")) {
             value = constrain(value, 0, 255);
-            Logger::console("Power steering set to output %i.", value);
+            Logger::console("Power steering set to output %d.", value);
             config->powerSteeringOutput = value;
         } else if (command == String("TBD")) {
             value = constrain(value, 0, 255);
-            Logger::console("xxxxx set to output %i.", value);
+            Logger::console("xxxxx set to output %d.", value);
             config->unusedOutput = value;
         } else {
             return false;
@@ -311,19 +310,19 @@ bool SerialConsole::handleConfigCmdHeater(String command, long value)
 
         if (command == String("HTMAXW")) {
             value = constrain(value, 0, 6000);
-            Logger::console("Setting maximum power to %iW", value);
+            Logger::console("Setting maximum power to %dW", value);
             config->maxPower = value;
         } else if (command == String("HTTEMP")) {
             value = constrain(value, 0, 100);
-            Logger::console("Setting desired water temperature to %i deg C", value);
+            Logger::console("Setting desired water temperature to %d deg C", value);
             config->targetTemperature = value;
         } else if (command == String("HTDERT")) {
             value = constrain(value, 0, 255);
-            Logger::console("Setting derating temperature to %i deg C", value);
+            Logger::console("Setting derating temperature to %d deg C", value);
             config->deratingTemperature = value;
         } else if (command == String("HTTON")) {
             value = constrain(value, 0, 255);
-            Logger::console("Setting external temp on to %i deg C", value);
+            Logger::console("Setting external temp on to %d deg C", value);
             config->extTemperatureOn = value;
         } else if (command == String("HTTADDR")) {
             Logger::console("Setting temp sensor address");
@@ -353,13 +352,13 @@ bool SerialConsole::handleConfigCmdFlowMeter(String command, long value)
     if (command == String("FMHCALIB") && heating && heating->getConfiguration()) {
         FlowMeterConfiguration *config = (FlowMeterConfiguration *) heating->getConfiguration();
         value = constrain(value, 1, 100000);
-        Logger::console("Setting flow meter heating calibration factor to %i", value);
+        Logger::console("Setting flow meter heating calibration factor to %d", value);
         config->calibrationFactor = value;
         heating->saveConfiguration();
     } else if (command == String("FMCCALIB") && cooling && cooling->getConfiguration()) {
         FlowMeterConfiguration *config = (FlowMeterConfiguration *) cooling->getConfiguration();
         value = constrain(value, 1, 100000);
-        Logger::console("Setting flow meter cooling calibration factor to %i", value);
+        Logger::console("Setting flow meter cooling calibration factor to %d", value);
         config->calibrationFactor = value;
         cooling->saveConfiguration();
     } else {
@@ -374,11 +373,11 @@ bool SerialConsole::handleConfigCmdSystem(String command, long value)
 
     if (command == String("ENABLE")) {
         if (!deviceManager.sendMessage(DEVICE_ANY, (DeviceId) value, MSG_ENABLE, NULL)) {
-            Logger::console("Invalid device ID (%X, %d)", value, value);
+            Logger::console("Invalid device ID (%#x, %d)", value, value);
         }
     } else if (command == String("DISABLE")) {
         if (!deviceManager.sendMessage(DEVICE_ANY, (DeviceId) value, MSG_DISABLE, NULL)) {
-            Logger::console("Invalid device ID (%X, %d)", value, value);
+            Logger::console("Invalid device ID (%#x, %d)", value, value);
         }
     } else if (command == String("LOGLEVEL")) {
         switch (value) {

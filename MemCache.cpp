@@ -1,26 +1,26 @@
 /*
  * MemCache.cpp
  *
- Copyright (c) 2013 Collin Kidder, Michael Neuweiler, Charles Galpin
+Copyright (c) 2013 Collin Kidder, Michael Neuweiler, Charles Galpin
 
- Permission is hereby granted, free of charge, to any person obtaining
- a copy of this software and associated documentation files (the
- "Software"), to deal in the Software without restriction, including
- without limitation the rights to use, copy, modify, merge, publish,
- distribute, sublicense, and/or sell copies of the Software, and to
- permit persons to whom the Software is furnished to do so, subject to
- the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
 
- The above copyright notice and this permission notice shall be included
- in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
- CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
  */
 
@@ -43,7 +43,7 @@ void MemCache::setup()
 {
     tickHandler.detach(this);
 
-    Logger::info("add MemCache (id: %X, %X)", MEMCACHE, &memCache);
+    Logger::info("add MemCache (id: %#x, %#x)", MEMCACHE, &memCache);
 
     Wire.begin();
     for (U8 c = 0; c < NUM_CACHED_PAGES; c++) {
@@ -212,7 +212,7 @@ boolean MemCache::Write(uint32_t address, uint8_t valu)
     addr = address >> 8; //kick it down to the page we're talking about
     c = cache_hit(addr);
 
-    if (c == 0xFF) {
+    if (c == 0xFF)    {
         c = cache_findpage(); //try to free up a page
 
         if (c != 0xFF) {
@@ -221,7 +221,7 @@ boolean MemCache::Write(uint32_t address, uint8_t valu)
     }
 
     if (c != 0xFF) {
-        pages[c].data[(uint16_t) (address & 0x00FF)] = valu;
+        pages[c].data[(uint16_t)(address & 0x00FF)] = valu;
         pages[c].dirty = true;
         pages[c].address = addr; //set this in case we actually are setting up a new cache page
         return true;
@@ -272,7 +272,7 @@ boolean MemCache::Write(uint32_t address, void* data, uint16_t len)
         }
 
         if (c != 0xFF) { //could we find a suitable cache page to write to?
-            pages[c].data[(uint16_t) ((address + count) & 0x00FF)] = *(uint8_t *) (data + count);
+            pages[c].data[(uint16_t)((address + count) & 0x00FF)] = * (uint8_t *)(data + count);
             pages[c].dirty = true;
             pages[c].address = addr; //set this in case we actually are setting up a new cache page
         } else {
@@ -304,7 +304,7 @@ boolean MemCache::Read(uint32_t address, uint8_t* valu)
     }
 
     if (c != 0xFF) {
-        *valu = pages[c].data[(uint16_t) (address & 0x00FF)];
+        *valu = pages[c].data[(uint16_t)(address & 0x00FF)];
 
         if (!pages[c].dirty) {
             pages[c].age = 0;    //reset age since we just used it
@@ -357,7 +357,7 @@ boolean MemCache::Read(uint32_t address, void* data, uint16_t len)
         }
 
         if (c != 0xFF) {
-            *(uint8_t *) (data + count) = pages[c].data[(uint16_t) ((address + count) & 0x00FF)];
+            * (uint8_t *)(data + count) = pages[c].data[(uint16_t)((address + count) & 0x00FF)];
 
             if (!pages[c].dirty) {
                 pages[c].age = 0;    //reset age since we just used it
@@ -511,10 +511,10 @@ boolean MemCache::cache_writepage(uint8_t page)
     for (d = 0; d < 256; d++) {
         buffer[d + 2] = pages[page].data[d];
     }
-    Wire.beginTransmission(i2c_id);
-    Wire.write(buffer, 256 + 2);
-    Wire.endTransmission(true);
-    delay(5);
 
+    Wire.beginTransmission(i2c_id);
+    Wire.write(buffer, 258);
+    Wire.endTransmission(true);
+    
     return true;
 }

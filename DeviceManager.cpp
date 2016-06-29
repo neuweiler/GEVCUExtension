@@ -51,7 +51,7 @@ DeviceManager::DeviceManager()
  */
 void DeviceManager::addDevice(Device *device)
 {
-    Logger::info(device->getId(), "add device: %s (id: %X)", device->getCommonName(), device->getId());
+    Logger::info(device, "add device: %s (id: %#x)", device->getCommonName(), device->getId());
 
     if (findDevice(device) == -1) {
         int8_t i = findDevice(NULL);
@@ -59,7 +59,7 @@ void DeviceManager::addDevice(Device *device)
         if (i != -1) {
             devices[i] = device;
         } else {
-            Logger::error(device->getId(), "unable to register device, max number of devices reached.");
+            Logger::error(device, "unable to register device, max number of devices reached.");
         }
     }
 }
@@ -89,12 +89,11 @@ bool DeviceManager::sendMessage(DeviceType devType, DeviceId devId, uint32_t msg
 {
     bool foundDevice = false;
     for (int i = 0; i < CFG_DEV_MGR_MAX_DEVICES; i++) {
-
         if (devices[i] && (devices[i]->isEnabled() || msgType == MSG_ENABLE)) { //does this object exist and is it enabled?
             if (devType == DEVICE_ANY || devType == devices[i]->getType()) {
                 if (devId == INVALID || devId == devices[i]->getId()) {
                     if (Logger::isDebug()) {
-                        Logger::debug("Sending msg %X to device %X", msgType, devices[i]->getId());
+                        Logger::debug("Sending msg %#x to device %#x", msgType, devices[i]->getId());
                     }
                     devices[i]->handleMessage(msgType, message);
                     foundDevice = true;
@@ -119,10 +118,10 @@ void DeviceManager::setParameter(DeviceType deviceType, DeviceId deviceId, uint3
 }
 
 /*
- Allows one to request a reference to a device with the given ID. This lets code specifically request a certain
- device. Normally this would be a bad idea because it sort of breaks the OOP design philosophy of polymorphism
- but sometimes you can't help it.
- */
+Allows one to request a reference to a device with the given ID. This lets code specifically request a certain
+device. Normally this would be a bad idea because it sort of breaks the OOP design philosophy of polymorphism
+but sometimes you can't help it.
+*/
 Device *DeviceManager::getDeviceByID(DeviceId id)
 {
     for (int i = 0; i < CFG_DEV_MGR_MAX_DEVICES; i++) {
@@ -133,14 +132,14 @@ Device *DeviceManager::getDeviceByID(DeviceId id)
         }
     }
 
-    Logger::debug("getDeviceByID - No device with ID: %X", (int) id);
-    return 0; //NULL!
+    Logger::debug("getDeviceByID - No device with ID: %#x", (int) id);
+    return NULL;
 }
 
 /*
- The more object oriented version of the above function. Allows one to find the first device that matches
- a given type and that is enabled.
- */
+The more object oriented version of the above function. Allows one to find the first device that matches
+a given type and that is enabled.
+*/
 Device *DeviceManager::getDeviceByType(DeviceType type)
 {
     for (int i = 0; i < CFG_DEV_MGR_MAX_DEVICES; i++) {
@@ -150,7 +149,7 @@ Device *DeviceManager::getDeviceByType(DeviceType type)
             }
         }
     }
-    return 0; //NULL!
+    return NULL;
 }
 
 /*
@@ -174,7 +173,7 @@ void DeviceManager::printDeviceList()
 
     for (int i = 0; i < CFG_DEV_MGR_MAX_DEVICES; i++) {
         if (devices[i] && devices[i]->isEnabled()) {
-            Logger::console("     %X     %s", devices[i]->getId(), devices[i]->getCommonName());
+            Logger::console("     %#x     %s", devices[i]->getId(), devices[i]->getCommonName());
         }
     }
 
@@ -182,7 +181,7 @@ void DeviceManager::printDeviceList()
 
     for (int i = 0; i < CFG_DEV_MGR_MAX_DEVICES; i++) {
         if (devices[i] && !devices[i]->isEnabled()) {
-            Logger::console("     %X     %s", devices[i]->getId(), devices[i]->getCommonName());
+            Logger::console("     %#x     %s", devices[i]->getId(), devices[i]->getCommonName());
         }
     }
 }

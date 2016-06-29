@@ -40,12 +40,15 @@ public:
     void handleTick();
     DeviceType getType();
     DeviceId getId();
+    void loadConfiguration();
+    void saveConfiguration();
 
 protected:
 
 private:
     bool led;
     int dotCount;
+    uint32_t lastTickTime;
 };
 
 #endif /* HEARTBEAT_H_ */

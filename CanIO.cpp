@@ -94,7 +94,7 @@ void CanIO::handleTick()
 {
     // safety: if CAN messages from GEVCU are missing, fault the system
     if (millis() > lastReception + CFG_CAN_IO_MSG_TIMEOUT) {
-        Logger::error(CAN_IO, "too many lost messages !");
+        Logger::error(this, "too many lost messages !");
         status.setSystemState(Status::error);
     }
 }
@@ -207,12 +207,14 @@ void CanIO::processGevcuStatus(CAN_FRAME *frame)
     setOutput(config->unusedOutput, logicIO & unused);
 
     if (Logger::isDebug()) {
-        Logger::debug(CAN_IO,
-                "state: %d, pre-charge: %t, main: %t, secondary: %t, fast chrg: %t, motor: %t, charger: %t, DCDC: %t, heater: %t, valve: %t, pump: %t, cooling pump: %t, fan: %t, brake: %t, reverse: %t, power steer: %t, unused: %t",
+        Logger::debug(this,
+                "state: %d, pre-charge: %d, main: %d, secondary: %d, fast chrg: %d, motor: %d, charger: %d, DCDC: %d",
                 frame->data.byte[4], logicIO & preChargeRelay, logicIO & mainContactor, logicIO & secondaryContactor, logicIO & fastChargeContactor,
-                logicIO & enableMotor, logicIO & enableCharger, logicIO & enableDcDc, logicIO & enableHeater, logicIO & heaterValve,
-                logicIO & heaterPump, logicIO & coolingPump, logicIO & coolingFan, logicIO & brakeLight, logicIO & reverseLight,
-                logicIO & powerSteering, logicIO & unused);
+                logicIO & enableMotor, logicIO & enableCharger, logicIO & enableDcDc);
+        Logger::debug(this,
+                "heater: %d, valve: %d, pump: %d, cooling pump: %d, fan: %d, brake: %d, reverse: %d, power steer: %d, unused: %d",
+                logicIO & enableHeater, logicIO & heaterValve, logicIO & heaterPump, logicIO & coolingPump, logicIO & coolingFan,
+                logicIO & brakeLight, logicIO & reverseLight, logicIO & powerSteering, logicIO & unused);
     }
 }
 
@@ -301,13 +303,13 @@ void CanIO::loadConfiguration()
         config->unusedOutput = 37;
         saveConfiguration();
     }
-    Logger::info(CAN_IO, "prechargeRelay: %d, mainContactor: %d, secondaryContactor:%d, fastChargeContactor: %d", config->prechargeRelayOutput,
+    Logger::info(this, "prechargeRelay: %d, mainContactor: %d, secondaryContactor:%d, fastChargeContactor: %d", config->prechargeRelayOutput,
             config->mainContactorOutput, config->secondaryContactorOutput, config->fastChargeContactorOutput);
-    Logger::info(CAN_IO, "enableMotor: %d, enableCharger: %d, enableDcDc:%d, enableHeater: %d", config->enableMotorOutput,
+    Logger::info(this, "enableMotor: %d, enableCharger: %d, enableDcDc:%d, enableHeater: %d", config->enableMotorOutput,
             config->enableChargerOutput, config->enableDcDcOutput, config->enableHeaterOutput);
-    Logger::info(CAN_IO, "heaterValve: %d, heaterPump: %d, coolingPump:%d, coolingFan: %d", config->heaterValveOutput, config->heaterPumpOutput,
+    Logger::info(this, "heaterValve: %d, heaterPump: %d, coolingPump:%d, coolingFan: %d", config->heaterValveOutput, config->heaterPumpOutput,
             config->coolingPumpOutput, config->coolingFanOutput);
-    Logger::info(CAN_IO, "brakeLight: %d, reverseLight: %d, powerSteering:%d, unused: %d", config->brakeLightOutput, config->reverseLightOutput,
+    Logger::info(this, "brakeLight: %d, reverseLight: %d, powerSteering:%d, unused: %d", config->brakeLightOutput, config->reverseLightOutput,
             config->powerSteeringOutput, config->unusedOutput);
 }
 

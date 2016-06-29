@@ -57,6 +57,7 @@ public:
     void handleTick();
     void FlushSinglePage();
     void FlushAllPages();
+    void FlushPage(uint8_t page);
     void FlushAddress(uint32_t address);
     void InvalidatePage(uint8_t page);
     void InvalidateAddress(uint32_t address);
@@ -90,7 +91,6 @@ private:
     PageCache pages[NUM_CACHED_PAGES];
     uint8_t cache_hit(uint32_t address);
     void cache_age();
-    void FlushPage(uint8_t page);
     uint8_t cache_findpage();
     uint8_t cache_readpage(uint32_t addr);
     boolean cache_writepage(uint8_t page);
