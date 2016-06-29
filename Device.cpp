@@ -128,9 +128,7 @@ bool Device::isEnabled()
     if (prefsHandler == NULL) {
         return true;
     }
-    //TODO use correct implementation
-//    return prefsHandler->isEnabled();
-    return true;
+    return prefsHandler->isEnabled();
 }
 
 /**

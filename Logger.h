@@ -62,7 +62,7 @@ private:
 
     static void log(DeviceId, LogLevel, char *format, va_list);
     static void logMessage(char *format, va_list args);
-    static void printDeviceName(DeviceId);
+    static void getDeviceName(DeviceId);
 };
 
 #endif /* LOGGER_H_ */

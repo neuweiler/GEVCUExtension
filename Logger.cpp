@@ -254,7 +254,7 @@ void Logger::log(DeviceId deviceId, LogLevel level, char *format, va_list args)
     SerialUSB.print(": ");
 
     if (deviceId) {
-        printDeviceName(deviceId);
+        getDeviceName(deviceId);
     }
 
     logMessage(format, args);
@@ -375,7 +375,7 @@ void Logger::logMessage(char *format, va_list args)
  * source of the logged message.
  * NOTE: Should be kept in synch with the defined devices.
  */
-void Logger::printDeviceName(DeviceId deviceId)
+void Logger::getDeviceName(DeviceId deviceId)
 {
     switch (deviceId) {
     case SYSTEM:
