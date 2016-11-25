@@ -34,12 +34,12 @@
 		<link>
 			<name>core/core</name>
 			<type>2</type>
-			<location>/Applications/Eclipse.app/Contents/Eclipse/arduinoPlugin/packages/arduino/hardware/sam/1.6.7/cores/arduino</location>
+			<location>/Applications/Eclipse.app/Contents/Eclipse/arduinoPlugin/packages/arduino/hardware/sam/1.6.9/cores/arduino</location>
 		</link>
 		<link>
 			<name>core/variant</name>
 			<type>2</type>
-			<location>/Applications/Eclipse.app/Contents/Eclipse/arduinoPlugin/packages/arduino/hardware/sam/1.6.7/variants/arduino_due_x</location>
+			<location>/Applications/Eclipse.app/Contents/Eclipse/arduinoPlugin/packages/arduino/hardware/sam/1.6.9/variants/arduino_due_x</location>
 		</link>
 		<link>
 			<name>libraries/DueTimer</name>

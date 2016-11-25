@@ -42,7 +42,17 @@
 								</option>
 								<inputType id="it.baeyens.arduino.compiler.c.sketch.input.936057811" name="C Source Files" superClass="it.baeyens.arduino.compiler.c.sketch.input"/>
 							</tool>
-							<tool id="it.baeyens.arduino.tool.sketch.compiler.s.2059956845" name="Arduino Assembler" superClass="it.baeyens.arduino.tool.sketch.compiler.s"/>
+							<tool id="it.baeyens.arduino.tool.sketch.compiler.s.2059956845" name="Arduino Assembler" superClass="it.baeyens.arduino.tool.sketch.compiler.s">
+								<option id="it.baeyens.arduino.compiler.asm.sketch.option.incpath.1076329865" name="Include Paths (-I)" superClass="it.baeyens.arduino.compiler.asm.sketch.option.incpath" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/core/core}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/libraries/DueTimer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/libraries/due_wire}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/libraries/OneWire}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/libraries/due_can}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/core/variant}&quot;"/>
+								</option>
+								<inputType id="it.baeyens.arduino.compiler.S.sketch.input.366331067" name="Assembly source files" superClass="it.baeyens.arduino.compiler.S.sketch.input"/>
+							</tool>
 							<tool id="it.baeyens.arduino.tool.ar.1255033987" name="Arduino archiver" superClass="it.baeyens.arduino.tool.ar"/>
 							<tool id="it.baeyens.arduino.tool.combine.247226458" name="Arduino combiner" superClass="it.baeyens.arduino.tool.combine"/>
 							<tool id="it.baeyens.arduino.tool.objcopy.eep.799731331" name="Arduino tool Create eeprom" superClass="it.baeyens.arduino.tool.objcopy.eep"/>
