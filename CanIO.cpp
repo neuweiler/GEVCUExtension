@@ -120,6 +120,14 @@ void CanIO::setOutput(uint8_t pin, bool active)
     }
 }
 
+bool CanIO::getOutput(uint8_t pin)
+{
+    if (pin != CFG_OUTPUT_NONE) {
+        return !digitalRead(pin);
+    }
+    return false;
+}
+
 /**
  * deactivate all output signals
  */
@@ -186,6 +194,18 @@ void CanIO::processGevcuStatus(CAN_FRAME *frame)
 
     uint16_t logicIO = frame->data.s1;
 
+    if ((logicIO & preChargeRelay) && status.getSystemState() != Status::preCharge) {
+        Logger::error(this, "Pre-Charge relay set in wrong system state %d", status.getSystemState());
+        status.setSystemState(Status::error);
+        return;
+    }
+
+    if ((logicIO & mainContactor) && !getOutput(config->mainContactorOutput) && status.getSystemState() != Status::preCharge) {
+         Logger::error(this, "Trying to enable main contactor in system state: %d", status.getSystemState());
+         status.setSystemState(Status::error);
+         return;
+     }
+
     setOutput(config->prechargeRelayOutput, logicIO & preChargeRelay);
     setOutput(config->mainContactorOutput, logicIO & mainContactor);
     setOutput(config->secondaryContactorOutput, logicIO & secondaryContactor);
@@ -212,7 +232,7 @@ void CanIO::processGevcuStatus(CAN_FRAME *frame)
                 frame->data.byte[4], logicIO & preChargeRelay, logicIO & mainContactor, logicIO & secondaryContactor, logicIO & fastChargeContactor,
                 logicIO & enableMotor, logicIO & enableCharger, logicIO & enableDcDc);
         Logger::debug(this,
-                "heater: %d, valve: %d, pump: %d, cooling pump: %d, fan: %d, brake: %d, reverse: %d, power steer: %d, unused: %d",
+                "heater: %d, valve: %d, heater pump: %d, cooling pump: %d, fan: %d, brake: %d, reverse: %d, power steer: %d, unused: %d",
                 logicIO & enableHeater, logicIO & heaterValve, logicIO & heaterPump, logicIO & coolingPump, logicIO & coolingFan,
                 logicIO & brakeLight, logicIO & reverseLight, logicIO & powerSteering, logicIO & unused);
     }
@@ -227,6 +247,23 @@ void CanIO::processGevcuAnalogIO(CAN_FRAME *frame)
     status.analogIn[1] = frame->data.s1;
     status.analogIn[2] = frame->data.s2;
     status.analogIn[3] = frame->data.s3;
+}
+
+/**
+ * Prints the status of all outputs
+ */
+void CanIO::printStatus()
+{
+    CanIOConfiguration *config = (CanIOConfiguration *) getConfiguration();
+
+    Logger::console("state: %d, pre-charge: %d, main: %d, secondary: %d, fast chrg: %d, motor: %d, charger: %d, DCDC: %d", status.getSystemState(),
+            getOutput(config->prechargeRelayOutput), getOutput(config->mainContactorOutput), getOutput(config->secondaryContactorOutput),
+            getOutput(config->fastChargeContactorOutput), getOutput(config->enableMotorOutput), getOutput(config->enableChargerOutput),
+            getOutput(config->enableDcDcOutput));
+    Logger::console("heater: %d, valve: %d, heater pump: %d, cooling pump: %d, fan: %d, brake: %d, reverse: %d, power steer: %d, unused: %d",
+            getOutput(config->enableHeaterOutput), getOutput(config->heaterValveOutput), getOutput(config->heaterPumpOutput),
+            getOutput(config->coolingPumpOutput), getOutput(config->coolingFanOutput), getOutput(config->brakeLightOutput),
+            getOutput(config->reverseLightOutput), getOutput(config->powerSteeringOutput), getOutput(config->unusedOutput));
 }
 
 DeviceType CanIO::getType()
@@ -290,7 +327,7 @@ void CanIO::loadConfiguration()
         config->enableMotorOutput = 29;
         config->enableChargerOutput = 27;
         config->enableDcDcOutput = 28;
-        config->enableHeaterOutput = 26;
+        config->enableHeaterOutput = 37;
 
         config->heaterValveOutput = 30;
         config->heaterPumpOutput = 31;
@@ -300,7 +337,7 @@ void CanIO::loadConfiguration()
         config->brakeLightOutput = 34;
         config->reverseLightOutput = 35;
         config->powerSteeringOutput = 36;
-        config->unusedOutput = 37;
+        config->unusedOutput = 26;
         saveConfiguration();
     }
     Logger::info(this, "prechargeRelay: %d, mainContactor: %d, secondaryContactor:%d, fastChargeContactor: %d", config->prechargeRelayOutput,

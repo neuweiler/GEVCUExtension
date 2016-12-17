@@ -412,5 +412,9 @@ void SerialConsole::handleShortCmd()
     case 'S':
         deviceManager.printDeviceList();
         break;
+    case 'c':
+        CanIO *canIO = (CanIO *) deviceManager.getDeviceByID(CAN_IO);
+        canIO->printStatus();
+        break;
     }
 }

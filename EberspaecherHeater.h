@@ -50,6 +50,7 @@ public:
     void tearDown();
     void handleTick();
     void handleCanFrame(CAN_FRAME *frame);
+    void handleStateChange(Status::SystemState, Status::SystemState);
     void processStatus(uint8_t *data);
     DeviceId getId();
     DeviceType getType();
@@ -59,6 +60,7 @@ public:
 protected:
 
 private:
+    CAN_FRAME frameWakeup; // frame to send wake-up message
     CAN_FRAME frameControl; // frame to send control messages
     CAN_FRAME frameKeepAlive; // frame to send heart beat
     CAN_FRAME frameCmd1; // frame to send cmd1 message
