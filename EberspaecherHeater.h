@@ -32,6 +32,10 @@
 #define CAN_MASK                0x0   // mask for above id's                     00000000000
 #define CAN_MASKED_ID           0x0   // masked id for id's from 0x258 to 0x268  00000000000
 
+// CAN bus id's for frames sent to GEVCU
+#define CAN_ID_GEVCU_HEATER     0x72b
+
+
 class EberspaecherHeaterConfiguration: public DeviceConfiguration
 {
 public:
@@ -51,7 +55,7 @@ public:
     void handleTick();
     void handleCanFrame(CAN_FRAME *frame);
     void handleStateChange(Status::SystemState, Status::SystemState);
-    void processStatus(uint8_t *data);
+    void processStatus(BytesUnion data);
     DeviceId getId();
     DeviceType getType();
     void loadConfiguration();
@@ -68,12 +72,16 @@ private:
     CAN_FRAME frameCmd3; // frame to send cmd3 message
     CAN_FRAME frameCmd4; // frame to send cmd4 message
     CAN_FRAME frameCmd5; // frame to send cmd5 message
+    CAN_FRAME frameStatus; // the frame sent to GEVCU containing status information
     uint16_t powerRequested; // value from 0 to 6000 watt
     Temperature *temperatureDevice;
+    uint8_t tickCounter;
+    uint8_t waterTemperature; // in degree C
 
     void calculatePower();
     void sendControl();
     void sendWakeup();
+    void sendStatus();
     void prepareFrames();
 };
 
