@@ -34,7 +34,7 @@
 
 #include <due_can.h>
 
-#define CFG_VERSION "GEVCU Extension 2016-06-29"
+#define CFG_VERSION "GEVCU Extension 2017-01-12"
 #define CFG_DEFAULT_LOGLEVEL Logger::Info
 
 /*

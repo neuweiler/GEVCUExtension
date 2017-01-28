@@ -47,7 +47,7 @@ void SerialConsole::loop()
 void SerialConsole::printMenu()
 {
     //Show build # here as well in case people are using the native port and don't get to see the start up messages
-    Logger::console("\nBuild number: %d", CFG_VERSION);
+    Logger::console("\n%s", CFG_VERSION);
     Logger::console("System State: %s", status.systemStateToStr(status.getSystemState()));
     Logger::console("System Menu:\n");
     Logger::console("Enable line endings of some sort (LF, CR, CRLF)\n");
