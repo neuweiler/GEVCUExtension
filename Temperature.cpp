@@ -76,7 +76,7 @@ void Temperature::sendTemperature()
         devices[i]->retrieveData();
         running = true;
         if (Logger::isDebug()) {
-            Logger::debug(this, "sensor #%d: %f C", i, devices[i]->getTemperatureCelsius());
+            Logger::debug(this, "sensor #%d: %f C", i, (float) devices[i]->getTemperatureCelsius() / 10.0);
         }
 
         int byteNum = -1;
@@ -98,21 +98,23 @@ void Temperature::sendTemperature()
             byteNum = 7;
         }
         if (byteNum != -1) {
-            outputFrame.data.byte[byteNum] = constrain(round(devices[i]->getTemperatureCelsius()) + CFG_CAN_TEMPERATURE_OFFSET, 0, 255);
+            outputFrame.data.byte[byteNum] = constrain(devices[i]->getTemperatureCelsius() / 10 + CFG_CAN_TEMPERATURE_OFFSET, 0, 255);
         }
     }
     canHandlerEv.sendFrame(outputFrame);
 }
 
 /*
- * Find the minimum temperature in celsius from all found sensors
+ * Find the minimum temperature in 0.1 celsius from all found sensors
+ *
+ * returns 9999 if no sensor was found
  */
-float Temperature::getMinimum()
+int16_t Temperature::getMinimum()
 {
-    float minimum = 999.0;
+    int16_t minimum = 9999;
 
     for (int i = 0; i < CFG_MAX_NUM_TEMPERATURE_SENSORS && devices[i] != NULL; i++) {
-        float temp = devices[i]->getTemperatureCelsius();
+        int16_t temp = devices[i]->getTemperatureCelsius();
         if (temp < minimum) {
             minimum = temp;
         }
@@ -121,14 +123,16 @@ float Temperature::getMinimum()
 }
 
 /*
- * Find the maximum temperature in celsius from all found sensors
+ * Find the maximum temperature in 0.1 celsius from all found sensors
+ *
+ * returns -9999 if no sensor was found
  */
-float Temperature::getMaximum()
+int16_t Temperature::getMaximum()
 {
-    float maximum = -999.0;
+    int16_t maximum = -9999;
 
     for (int i = 0; i < CFG_MAX_NUM_TEMPERATURE_SENSORS && devices[i] != NULL; i++) {
-        float temp = devices[i]->getTemperatureCelsius();
+        int16_t temp = devices[i]->getTemperatureCelsius();
         if (temp > maximum) {
             maximum = temp;
         }
@@ -137,15 +141,15 @@ float Temperature::getMaximum()
 }
 
 /*
- * Get the temperature from a sensor by specifying its address
+ * Get the temperature from a sensor in 0.1 degree celsius by specifying its address
  *
- * returns 999 if sensor was not found
+ * returns 9999 if sensor was not found
  */
-float Temperature::getSensorTemperature(byte *address) {
+int16_t Temperature::getSensorTemperature(byte *address) {
     for (int i = 0; i < CFG_MAX_NUM_TEMPERATURE_SENSORS && devices[i] != NULL; i++) {
         if (memcmp(devices[i]->getAddress(), address, 8) == 0) {
             return devices[i]->getTemperatureCelsius();
         }
     }
-    return 999;
+    return 9999;
 }

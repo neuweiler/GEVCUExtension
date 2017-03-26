@@ -13,7 +13,7 @@ static OneWire ds(CFG_IO_TEMPERATURE_SENSOR); // DS18B20 Temperature chip i/o
 TemperatureSensor::TemperatureSensor(byte addr[])
 {
     memcpy(address, addr, 8); // copy over the contents of the source array
-    temperature = 0.0;
+    temperature = 0;
 
     if (address[0] == 0x10) {
         type = DS18S20;
@@ -135,19 +135,19 @@ void TemperatureSensor::retrieveData()
 }
 
 /**
- * Return the measured temperature in degree celsius
+ * Return the measured temperature in 0.1 degree celsius
  */
-float TemperatureSensor::getTemperatureCelsius()
+int16_t TemperatureSensor::getTemperatureCelsius()
 {
-    return (float) temperature / 16.0;
+    return temperature * 5 / 8;
 }
 
 /**
- * Return the measured temperature in degree fahrenheit
+ * Return the measured temperature in 0.1 degree fahrenheit
  */
-float TemperatureSensor::getTemperatureFahrenheit()
+int16_t TemperatureSensor::getTemperatureFahrenheit()
 {
-    return (float) temperature / 16.0 * 1.8 + 32.0;
+    return temperature * 9 / 8 + 320;
 }
 
 /**
@@ -159,7 +159,7 @@ void TemperatureSensor::resetSearch()
 }
 
 /**
- * A static function to search for more devices and instanciate an object
+ * A static function to search for more devices and instantiate an object
  * for each found device.
  */
 TemperatureSensor *TemperatureSensor::search()

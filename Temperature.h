@@ -23,9 +23,9 @@ public:
     void handleTick();
     DeviceId getId();
     DeviceType getType();
-    float getMinimum();
-    float getMaximum();
-    float getSensorTemperature(byte[]);
+    int16_t getMinimum();
+    int16_t getMaximum();
+    int16_t getSensorTemperature(byte[]);
 
 protected:
 

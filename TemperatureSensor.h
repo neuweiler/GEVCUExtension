@@ -29,8 +29,8 @@ public:
     byte *getAddress();
     void setResolution(byte resolution);
     void retrieveData();
-    float getTemperatureCelsius();
-    float getTemperatureFahrenheit();
+    int16_t getTemperatureCelsius();
+    int16_t getTemperatureFahrenheit();
 protected:
 
 private:

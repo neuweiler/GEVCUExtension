@@ -116,12 +116,13 @@ void EberspaecherHeater::handleStateChange(Status::SystemState oldState, Status:
         EberspaecherHeaterConfiguration *config = (EberspaecherHeaterConfiguration *) getConfiguration();
 
         // get external temperature
-        float extnernalTemperature = 999;
+        int16_t extnernalTemperature = 9999;
         if (temperatureDevice->isRunning()) {
             extnernalTemperature = temperatureDevice->getSensorTemperature(config->extTemperatureSensorAddress);
         }
+        Logger::info(this, "external temperature %.1f C (turn on heater at or below %d C)", extnernalTemperature / 10.0f, config->extTemperatureOn);
 
-        if (extnernalTemperature <= config->extTemperatureOn || config->extTemperatureOn == 255) {
+        if (extnernalTemperature <= config->extTemperatureOn * 10 || config->extTemperatureOn == 255) {
             powerOn = true;
         }
     }
@@ -210,7 +211,7 @@ void EberspaecherHeater::calculatePower()
     }
 
     // calculate power
-    if (powerOn && (waterTemperature <= config->targetTemperature)) {
+    if (powerOn && (waterTemperature <= config->targetTemperature) && millis() > CFG_DELAY_HEATER) {
         // if below derating temperature, apply maximum power
         if (config->deratingTemperature == 255 || waterTemperature < config->deratingTemperature) {
             powerRequested = config->maxPower;
@@ -324,21 +325,19 @@ void EberspaecherHeater::loadConfiguration()
         for (int i = 0; i < 8; i++) {
             prefsHandler->read(EEHEAT_EXT_TEMPERATURE_ADDRESS + i, &config->extTemperatureSensorAddress[i]);
         }
-//TODO: remove hard coded address
-config->extTemperatureSensorAddress[0] = 0x28;
-config->extTemperatureSensorAddress[1] = 0xFF;
-config->extTemperatureSensorAddress[2] = 0xE8;
-config->extTemperatureSensorAddress[3] = 0xA8;
-config->extTemperatureSensorAddress[4] = 0x64;
-config->extTemperatureSensorAddress[5] = 0x14;
-config->extTemperatureSensorAddress[6] = 0x2;
-config->extTemperatureSensorAddress[7] = 0x49;
     } else { //checksum invalid, reinitialize values and store to EEPROM
         config->maxPower = 4000;
         config->targetTemperature = 80;
         config->deratingTemperature = 70;
         config->extTemperatureOn = 15;
-        memset(config->extTemperatureSensorAddress, 0, 8);
+        config->extTemperatureSensorAddress[0] = 0x28;
+        config->extTemperatureSensorAddress[1] = 0xFF;
+        config->extTemperatureSensorAddress[2] = 0xE8;
+        config->extTemperatureSensorAddress[3] = 0xA8;
+        config->extTemperatureSensorAddress[4] = 0x64;
+        config->extTemperatureSensorAddress[5] = 0x14;
+        config->extTemperatureSensorAddress[6] = 0x2;
+        config->extTemperatureSensorAddress[7] = 0x49;
         saveConfiguration();
     }
     Logger::info(this, "maxPower: %d, target temperature: %d deg C, ext temperature on: %d deg C", config->maxPower, config->targetTemperature, config->extTemperatureOn);

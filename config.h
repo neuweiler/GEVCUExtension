@@ -34,7 +34,7 @@
 
 #include <due_can.h>
 
-#define CFG_VERSION "GEVCU Extension 2017-01-12"
+#define CFG_VERSION "GEVCU Extension 2017-03-26"
 #define CFG_DEFAULT_LOGLEVEL Logger::Info
 
 /*
@@ -99,5 +99,10 @@
 #define CFG_IO_TEMPERATURE_SENSOR       8 // pin to which the data line of the single wire temperature sensors are connected
 #define CFG_FLOW_METER_COOLING          3 // pin to which the flow meter sensor of the cooling loop is connected
 #define CFG_FLOW_METER_HEATER           2 // pin to which the flow meter sensor of the heater loop is connected
+
+/*
+ * Miscellaneous
+ */
+#define CFG_DELAY_HEATER    30000 // ms to delay heater power > 0 (e.g. to make sure pump is running)
 
 #endif /* CONFIG_H_ */

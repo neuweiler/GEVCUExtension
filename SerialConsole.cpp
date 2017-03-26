@@ -215,7 +215,7 @@ void SerialConsole::handleConfigCmd()
 
     if (!handleConfigCmdCanIO(command, value) && !handleConfigCmdHeater(command, value) && !handleConfigCmdFlowMeter(command, value)
             && !handleConfigCmdSystem(command, value, (cmdBuffer + i))) {
-        Logger::error("unknown command: %s", command.c_str());
+        Logger::warn("unknown command: %s", command.c_str());
     }
 }
 
