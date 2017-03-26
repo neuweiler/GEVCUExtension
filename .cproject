@@ -17,46 +17,46 @@
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 				<configuration artifactName="${ProjName}" buildProperties="" description="" id="it.baeyens.arduino.core.toolChain.release.18456040" name="Release" parent="org.eclipse.cdt.build.core.emptycfg">
 					<folderInfo id="it.baeyens.arduino.core.toolChain.release.18456040.930926239" name="/" resourcePath="">
-						<toolChain id="it.baeyens.arduino.core.toolChain.release.260526469" name="Arduino Toolchain" superClass="it.baeyens.arduino.core.toolChain.release">
-							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="it.baeyens.arduino.targetplatform.1700669074" name="Arduino Target" osList="all" superClass="it.baeyens.arduino.targetplatform"/>
-							<builder buildPath="${workspace_loc:/GEVCUExtension}/Release" id="it.baeyens.arduino.sketch.builder.1296332842" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Arduino sketch builder" superClass="it.baeyens.arduino.sketch.builder"/>
-							<tool id="it.baeyens.arduino.tool.sketch.compiler.cpp.1223824244" name="Arduino C++ Compiler" superClass="it.baeyens.arduino.tool.sketch.compiler.cpp">
-								<option id="it.baeyens.arduino.compiler.cpp.sketch.option.incpath.1345261614" name="Include Paths (-I)" superClass="it.baeyens.arduino.compiler.cpp.sketch.option.incpath" valueType="includePath">
+						<toolChain id="io.sloeber.core.toolChain.release.1394883553" name="Arduino Toolchain (Sloeber edition)" superClass="io.sloeber.core.toolChain.release">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="io.sloeber.targetplatform.1375326577" name="Arduino Target" osList="all" superClass="io.sloeber.targetplatform"/>
+							<builder buildPath="${workspace_loc:/GEVCUExtension}/Release" id="io.sloeber.sketch.builder.1847935009" keepEnvironmentInBuildfile="false" name="Arduino sketch builder" superClass="io.sloeber.sketch.builder"/>
+							<tool id="io.sloeber.tool.sketch.compiler.cpp.1731341034" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp">
+								<option id="io.sloeber.compiler.cpp.sketch.option.incpath.1326276624" name="Include Paths (-I)" superClass="io.sloeber.compiler.cpp.sketch.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/core/variant}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/libraries/due_wire}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/libraries/OneWire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/libraries/due_can}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/libraries/due_wire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/libraries/DueTimer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/libraries/OneWire}&quot;"/>
 								</option>
-								<inputType id="it.baeyens.arduino.compiler.cpp.sketch.input.106613698" name="CPP source files" superClass="it.baeyens.arduino.compiler.cpp.sketch.input"/>
+								<inputType id="io.sloeber.compiler.cpp.sketch.input.451467360" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
-							<tool id="it.baeyens.arduino.tool.compiler.c.1516246583" name="Arduino C Compiler" superClass="it.baeyens.arduino.tool.compiler.c">
-								<option id="it.baeyens.arduino.compiler.c.sketch.option.incpath.1701312435" name="Include Paths (-I)" superClass="it.baeyens.arduino.compiler.c.sketch.option.incpath" valueType="includePath">
+							<tool id="io.sloeber.tool.compiler.c.1307472900" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c">
+								<option id="io.sloeber.compiler.c.sketch.option.incpath.989198476" name="Include Paths (-I)" superClass="io.sloeber.compiler.c.sketch.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/core/variant}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/libraries/due_wire}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/libraries/OneWire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/libraries/due_can}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/libraries/due_wire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/libraries/DueTimer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/libraries/OneWire}&quot;"/>
 								</option>
-								<inputType id="it.baeyens.arduino.compiler.c.sketch.input.936057811" name="C Source Files" superClass="it.baeyens.arduino.compiler.c.sketch.input"/>
+								<inputType id="io.sloeber.compiler.c.sketch.input.993832209" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
-							<tool id="it.baeyens.arduino.tool.sketch.compiler.s.2059956845" name="Arduino Assembler" superClass="it.baeyens.arduino.tool.sketch.compiler.s">
-								<option id="it.baeyens.arduino.compiler.asm.sketch.option.incpath.1076329865" name="Include Paths (-I)" superClass="it.baeyens.arduino.compiler.asm.sketch.option.incpath" valueType="includePath">
+							<tool id="io.sloeber.tool.sketch.compiler.s.1884057376" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s">
+								<option id="io.sloeber.compiler.asm.sketch.option.incpath.1483784927" name="Include Paths (-I)" superClass="io.sloeber.compiler.asm.sketch.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/core/core}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/libraries/DueTimer}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/libraries/due_wire}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/libraries/OneWire}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/libraries/due_can}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/core/variant}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/libraries/due_can}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/libraries/due_wire}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/libraries/DueTimer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/GEVCUExtension/libraries/OneWire}&quot;"/>
 								</option>
-								<inputType id="it.baeyens.arduino.compiler.S.sketch.input.366331067" name="Assembly source files" superClass="it.baeyens.arduino.compiler.S.sketch.input"/>
+								<inputType id="io.sloeber.compiler.S.sketch.input.1698934138" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>
-							<tool id="it.baeyens.arduino.tool.ar.1255033987" name="Arduino archiver" superClass="it.baeyens.arduino.tool.ar"/>
-							<tool id="it.baeyens.arduino.tool.combine.247226458" name="Arduino combiner" superClass="it.baeyens.arduino.tool.combine"/>
-							<tool id="it.baeyens.arduino.tool.objcopy.eep.799731331" name="Arduino tool Create eeprom" superClass="it.baeyens.arduino.tool.objcopy.eep"/>
-							<tool id="it.baeyens.arduino.tool.size.2081150142" name="Arduino tool Print Size" superClass="it.baeyens.arduino.tool.size"/>
+							<tool id="io.sloeber.tool.ar.1887993831" name="Arduino archiver" superClass="io.sloeber.tool.ar"/>
+							<tool id="io.sloeber.tool.combine.659335106" name="Arduino combiner" superClass="io.sloeber.tool.combine"/>
+							<tool id="io.sloeber.tool.objcopy.eep.1446012214" name="Arduino tool Create eeprom" superClass="io.sloeber.tool.objcopy.eep"/>
+							<tool id="io.sloeber.tool.size.830047382" name="Arduino tool Print Size" superClass="io.sloeber.tool.size"/>
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
