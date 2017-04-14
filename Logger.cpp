@@ -183,8 +183,8 @@ void Logger::console(char *message, ...)
 void Logger::setLoglevel(LogLevel level)
 {
     logLevel = level;
-    for (int deviceEntry = 0; deviceEntry < deviceIdsSize; deviceEntry ++) {
-		deviceLoglevel[deviceEntry] = level;
+    for (int deviceEntry = 0; deviceEntry < deviceIdsSize; deviceEntry++) {
+        deviceLoglevel[deviceEntry] = level;
     }
     debugging = (level == Debug);
 }
@@ -195,15 +195,15 @@ void Logger::setLoglevel(LogLevel level)
  */
 void Logger::setLoglevel(Device *device, LogLevel level)
 {
-Logger::console("setting loglevel for device '%s' to %d", device->getCommonName(), level);
-	debugging = false;
-    for (int deviceEntry = 0; deviceEntry < deviceIdsSize; deviceEntry ++) {
-    	if (deviceIds[deviceEntry] == device->getId()) {
-    		deviceLoglevel[deviceEntry] = level;
-    	}
-    	if (deviceLoglevel[deviceEntry] == Debug) {
-    		debugging = true;
-    	}
+    Logger::console("setting loglevel for device '%s' to %d", device->getCommonName(), level);
+    debugging = false;
+    for (int deviceEntry = 0; deviceEntry < deviceIdsSize; deviceEntry++) {
+        if (deviceIds[deviceEntry] == device->getId()) {
+            deviceLoglevel[deviceEntry] = level;
+        }
+        if (deviceLoglevel[deviceEntry] == Debug) {
+            debugging = true;
+        }
     }
 }
 /*
@@ -219,10 +219,10 @@ Logger::LogLevel Logger::getLogLevel()
  */
 Logger::LogLevel Logger::getLogLevel(Device *device)
 {
-    for (int deviceEntry = 0; deviceEntry < deviceIdsSize; deviceEntry ++) {
-    	if (deviceIds[deviceEntry] == device->getId()) {
-    		return deviceLoglevel[deviceEntry];
-    	}
+    for (int deviceEntry = 0; deviceEntry < deviceIdsSize; deviceEntry++) {
+        if (deviceIds[deviceEntry] == device->getId()) {
+            return deviceLoglevel[deviceEntry];
+        }
     }
     return logLevel;
 }
@@ -261,15 +261,15 @@ void Logger::log(char *deviceName, LogLevel level, char *format, va_list args)
     lastLogTime = millis();
 
     switch (level) {
-        case Info:
-            logLevel = "INFO";
-            break;
-        case Warn:
-            logLevel = "WARNING";
-            break;
-        case Error:
-            logLevel = "ERROR";
-            break;
+    case Info:
+        logLevel = "INFO";
+        break;
+    case Warn:
+        logLevel = "WARNING";
+        break;
+    case Error:
+        logLevel = "ERROR";
+        break;
     }
     vsnprintf(msgBuffer, CFG_LOG_BUFFER_SIZE, format, args);
 

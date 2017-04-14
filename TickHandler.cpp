@@ -87,41 +87,41 @@ void TickHandler::attach(TickObserver* observer, uint32_t interval)
     Logger::debug("attached TickObserver (%#x) as number %d to timer %d, %dus interval", observer, observerIndex, timer, interval);
 
     switch (timer) { // restarting a timer which would already be running is no problem (see DueTimer.cpp)
-        case 0:
-            Timer0.setPeriod(interval).attachInterrupt(timer0Interrupt).start();
-            break;
+    case 0:
+        Timer0.setPeriod(interval).attachInterrupt(timer0Interrupt).start();
+        break;
 
-        case 1:
-            Timer1.setPeriod(interval).attachInterrupt(timer1Interrupt).start();
-            break;
+    case 1:
+        Timer1.setPeriod(interval).attachInterrupt(timer1Interrupt).start();
+        break;
 
-        case 2:
-            Timer2.setPeriod(interval).attachInterrupt(timer2Interrupt).start();
-            break;
+    case 2:
+        Timer2.setPeriod(interval).attachInterrupt(timer2Interrupt).start();
+        break;
 
-        case 3:
-            Timer3.setPeriod(interval).attachInterrupt(timer3Interrupt).start();
-            break;
+    case 3:
+        Timer3.setPeriod(interval).attachInterrupt(timer3Interrupt).start();
+        break;
 
-        case 4:
-            Timer4.setPeriod(interval).attachInterrupt(timer4Interrupt).start();
-            break;
+    case 4:
+        Timer4.setPeriod(interval).attachInterrupt(timer4Interrupt).start();
+        break;
 
-        case 5:
-            Timer5.setPeriod(interval).attachInterrupt(timer5Interrupt).start();
-            break;
+    case 5:
+        Timer5.setPeriod(interval).attachInterrupt(timer5Interrupt).start();
+        break;
 
-        case 6:
-            Timer6.setPeriod(interval).attachInterrupt(timer6Interrupt).start();
-            break;
+    case 6:
+        Timer6.setPeriod(interval).attachInterrupt(timer6Interrupt).start();
+        break;
 
-        case 7:
-            Timer7.setPeriod(interval).attachInterrupt(timer7Interrupt).start();
-            break;
+    case 7:
+        Timer7.setPeriod(interval).attachInterrupt(timer7Interrupt).start();
+        break;
 
-        case 8:
-            Timer8.setPeriod(interval).attachInterrupt(timer8Interrupt).start();
-            break;
+    case 8:
+        Timer8.setPeriod(interval).attachInterrupt(timer8Interrupt).start();
+        break;
     }
 }
 
@@ -135,8 +135,7 @@ bool TickHandler::isAttached(TickObserver* observer, uint32_t interval)
 {
     for (int timer = 0; timer < NUM_TIMERS; timer++) {
         for (int observerIndex = 0; observerIndex < CFG_TIMER_NUM_OBSERVERS; observerIndex++) {
-            if (timerEntry[timer].observer[observerIndex] == observer &&
-                    timerEntry[timer].interval == interval) {
+            if (timerEntry[timer].observer[observerIndex] == observer && timerEntry[timer].interval == interval) {
                 return true;
             }
         }

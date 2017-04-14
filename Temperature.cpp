@@ -31,7 +31,8 @@ void Temperature::setup()
         if (devices[i] == NULL)
             break;
         byte *addr = devices[i]->getAddress();
-        Logger::info(this, "found sensor #%d: addr=0x%#x %#x %#x %#x %#x %#x %#x %#x, %s", i, addr[0], addr[1], addr[2], addr[3], addr[4], addr[5], addr[6], addr[7], devices[i]->getTypeStr());
+        Logger::info(this, "found sensor #%d: addr=0x%#x %#x %#x %#x %#x %#x %#x %#x, %s", i, addr[0], addr[1], addr[2], addr[3], addr[4], addr[5],
+                addr[6], addr[7], devices[i]->getTypeStr());
     }
     devices[i] = NULL;
     TemperatureSensor::prepareData();
@@ -40,7 +41,6 @@ void Temperature::setup()
 
     tickHandler.attach(this, CFG_TICK_INTERVAL_TEMPERATURE);
 }
-
 
 /**
  * process a tick event from the timer the device is registered to.
@@ -145,7 +145,8 @@ int16_t Temperature::getMaximum()
  *
  * returns 9999 if sensor was not found
  */
-int16_t Temperature::getSensorTemperature(byte *address) {
+int16_t Temperature::getSensorTemperature(byte *address)
+{
     for (int i = 0; i < CFG_MAX_NUM_TEMPERATURE_SENSORS && devices[i] != NULL; i++) {
         if (memcmp(devices[i]->getAddress(), address, 8) == 0) {
             return devices[i]->getTemperatureCelsius();

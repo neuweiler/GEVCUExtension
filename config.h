@@ -75,7 +75,6 @@
  * the parameter values defined here are used instead of those stored in the EEPROM.
  */
 //#define USE_HARD_CODED
-
 /*
  * ARRAY SIZE
  *

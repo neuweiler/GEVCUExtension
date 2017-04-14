@@ -118,10 +118,10 @@ void DeviceManager::setParameter(DeviceType deviceType, DeviceId deviceId, uint3
 }
 
 /*
-Allows one to request a reference to a device with the given ID. This lets code specifically request a certain
-device. Normally this would be a bad idea because it sort of breaks the OOP design philosophy of polymorphism
-but sometimes you can't help it.
-*/
+ Allows one to request a reference to a device with the given ID. This lets code specifically request a certain
+ device. Normally this would be a bad idea because it sort of breaks the OOP design philosophy of polymorphism
+ but sometimes you can't help it.
+ */
 Device *DeviceManager::getDeviceByID(DeviceId id)
 {
     for (int i = 0; i < CFG_DEV_MGR_MAX_DEVICES; i++) {
@@ -137,9 +137,9 @@ Device *DeviceManager::getDeviceByID(DeviceId id)
 }
 
 /*
-The more object oriented version of the above function. Allows one to find the first device that matches
-a given type and that is enabled.
-*/
+ The more object oriented version of the above function. Allows one to find the first device that matches
+ a given type and that is enabled.
+ */
 Device *DeviceManager::getDeviceByType(DeviceType type)
 {
     for (int i = 0; i < CFG_DEV_MGR_MAX_DEVICES; i++) {

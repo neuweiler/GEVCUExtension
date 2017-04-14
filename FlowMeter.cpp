@@ -38,7 +38,7 @@ FlowMeter::FlowMeter(DeviceId devId, uint8_t pin) :
 
     prefsHandler = new PrefHandler(id);
     if (id == FLOW_METER_COOLING) {
-        commonName =  "Flow Meter Cooling";
+        commonName = "Flow Meter Cooling";
     } else {
         commonName = "Flow Meter Heater";
     }

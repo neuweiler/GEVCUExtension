@@ -136,5 +136,4 @@
 // flow meter data
 #define EEFLOW_CALIBRATION_FACTOR           10 // 2 bytes, value
 
-
 #endif
