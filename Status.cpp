@@ -38,6 +38,22 @@ Status::Status()
     for (int i = 0; i < 4; i++) {
         analogIn[i] = 0;
     }
+    preChargeRelay = false;
+    mainContactor = false;
+    secondaryContactor = false;
+    fastChargeContactor = false;
+    enableMotor = false;
+    enableCharger = false;
+    enableDcDc = false;
+    enableHeater = false;
+    heaterValve = false;
+    heaterPump = false;
+    coolingPump = false;
+    coolingFan = false;
+    brakeLight = false;
+    reverseLight = false;
+    powerSteering = false;
+    unused = false;
 }
 
 /*

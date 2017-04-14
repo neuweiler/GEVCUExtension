@@ -122,7 +122,6 @@ public:
     void handleCanFrame(CAN_FRAME *frame);
     void processGevcuStatus(CAN_FRAME *frame);
     void processGevcuAnalogIO(CAN_FRAME *frame);
-    void printStatus();
     DeviceId getId();
     DeviceType getType();
     void loadConfiguration();
@@ -136,8 +135,7 @@ private:
 
     void resetOutput();
     void setPinMode(uint8_t pin);
-    void setOutput(uint8_t pin, bool value);
-    bool getOutput(uint8_t pin);
+    void setOutput(uint8_t pin, bool value, bool *flag);
 };
 
 #endif /* CANIO_H_ */

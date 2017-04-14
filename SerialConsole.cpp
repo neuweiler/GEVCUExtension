@@ -105,7 +105,8 @@ void SerialConsole::printMenuHeater()
         Logger::console("\HEATER CONTROLS\n");
         Logger::console("HTMAXW=%d - Maximum power (0 - 6000 Watt)", config->maxPower);
         Logger::console("HTTEMP=%d - Desired water temperature (0 - 100 deg C)", config->targetTemperature);
-        Logger::console("HTDERT=%d - Temperature at which power will be derated from maxPower to 0%% at target temperature (0 - 100 deg C, 255 = ignore)",
+        Logger::console(
+                "HTDERT=%d - Temperature at which power will be derated from maxPower to 0%% at target temperature (0 - 100 deg C, 255 = ignore)",
                 config->deratingTemperature);
         Logger::console("HTTON=%d - external temperature at which heater is turned on (0 - 40 deg C, 255 = ignore)", config->extTemperatureOn);
         Logger::console("HTTADDR=%#x,%#x,%#x,%#x,%#x,%#x,%#x,%#x, - address of external temperature sensor", config->extTemperatureSensorAddress[0],
@@ -413,8 +414,12 @@ void SerialConsole::handleShortCmd()
         deviceManager.printDeviceList();
         break;
     case 'c':
-        CanIO *canIO = (CanIO *) deviceManager.getDeviceByID(CAN_IO);
-        canIO->printStatus();
+        Logger::console("state: %d, pre-charge: %d, main: %d, secondary: %d, fast chrg: %d, motor: %d, charger: %d, DCDC: %d",
+                status.getSystemState(), status.preChargeRelay, status.mainContactor, status.secondaryContactor, status.fastChargeContactor,
+                status.enableMotor, status.enableCharger, status.enableDcDc);
+        Logger::console("heater: %d, valve: %d, heater pump: %d, cooling pump: %d, fan: %d, brake: %d, reverse: %d, power steer: %d, unused: %d",
+                status.enableHeater, status.heaterValve, status.heaterPump, status.coolingPump, status.coolingFan, status.brakeLight,
+                status.reverseLight, status.powerSteering, status.unused);
         break;
     }
 }

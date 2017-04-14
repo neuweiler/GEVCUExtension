@@ -113,19 +113,12 @@ void CanIO::setPinMode(uint8_t pin)
  * check if a pin is configured and set it to HIGH or LOW depending on the input
  * note: if the output is logically active, it has to be set to LOW
  */
-void CanIO::setOutput(uint8_t pin, bool active)
+void CanIO::setOutput(uint8_t pin, bool active, bool *flag)
 {
+    *flag = active;
     if (pin != CFG_OUTPUT_NONE) {
         digitalWrite(pin, (active && status.getSystemState() != Status::error) ? LOW : HIGH);
     }
-}
-
-bool CanIO::getOutput(uint8_t pin)
-{
-    if (pin != CFG_OUTPUT_NONE) {
-        return !digitalRead(pin);
-    }
-    return false;
 }
 
 /**
@@ -135,25 +128,25 @@ void CanIO::resetOutput()
 {
     CanIOConfiguration *config = (CanIOConfiguration *) getConfiguration();
 
-    setOutput(config->prechargeRelayOutput, false);
-    setOutput(config->mainContactorOutput, false);
-    setOutput(config->secondaryContactorOutput, false);
-    setOutput(config->fastChargeContactorOutput, false);
+    setOutput(config->prechargeRelayOutput, false, &status.preChargeRelay);
+    setOutput(config->mainContactorOutput, false, &status.mainContactor);
+    setOutput(config->secondaryContactorOutput, false, &status.secondaryContactor);
+    setOutput(config->fastChargeContactorOutput, false, &status.fastChargeContactor);
 
-    setOutput(config->enableMotorOutput, false);
-    setOutput(config->enableChargerOutput, false);
-    setOutput(config->enableDcDcOutput, false);
-    setOutput(config->enableHeaterOutput, false);
+    setOutput(config->enableMotorOutput, false, &status.enableMotor);
+    setOutput(config->enableChargerOutput, false, &status.enableCharger);
+    setOutput(config->enableDcDcOutput, false, &status.enableDcDc);
+    setOutput(config->enableHeaterOutput, false, &status.enableHeater);
 
-    setOutput(config->heaterValveOutput, false);
-    setOutput(config->heaterPumpOutput, false);
-    setOutput(config->coolingPumpOutput, false);
-    setOutput(config->coolingFanOutput, false);
+    setOutput(config->heaterValveOutput, false, &status.heaterValve);
+    setOutput(config->heaterPumpOutput, false, &status.heaterPump);
+    setOutput(config->coolingPumpOutput, false, &status.coolingPump);
+    setOutput(config->coolingFanOutput, false, &status.coolingFan);
 
-    setOutput(config->brakeLightOutput, false);
-    setOutput(config->reverseLightOutput, false);
-    setOutput(config->powerSteeringOutput, false);
-    setOutput(config->unusedOutput, false);
+    setOutput(config->brakeLightOutput, false, &status.brakeLight);
+    setOutput(config->reverseLightOutput, false, &status.reverseLight);
+    setOutput(config->powerSteeringOutput, false, &status.powerSteering);
+    setOutput(config->unusedOutput, false, &status.unused);
 }
 
 /*
@@ -188,9 +181,10 @@ void CanIO::processGevcuStatus(CAN_FRAME *frame)
 {
     CanIOConfiguration *config = (CanIOConfiguration *) getConfiguration();
 
-    // safety: set the system state, a error will cause a call of tearDown()
-    // and prevent any activation of outputs.
-    status.setSystemState((Status::SystemState) frame->data.byte[4]);
+    // safety: set the system state, a error will cause a call of tearDown() and prevent any activation of outputs.
+    if (status.setSystemState((Status::SystemState) frame->data.byte[4]) == Status::error) {
+        return;
+    }
 
     uint16_t logicIO = frame->data.s1;
 
@@ -200,41 +194,39 @@ void CanIO::processGevcuStatus(CAN_FRAME *frame)
         return;
     }
 
-    if ((logicIO & mainContactor) && !getOutput(config->mainContactorOutput) && status.getSystemState() != Status::preCharge) {
-         Logger::error(this, "Trying to enable main contactor in system state: %d", status.getSystemState());
-         status.setSystemState(Status::error);
-         return;
-     }
+    if ((logicIO & mainContactor) && !status.mainContactor && status.getSystemState() != Status::preCharge) {
+        Logger::error(this, "Trying to enable main contactor in system state: %d", status.getSystemState());
+        status.setSystemState(Status::error);
+        return;
+    }
 
-    setOutput(config->prechargeRelayOutput, logicIO & preChargeRelay);
-    setOutput(config->mainContactorOutput, logicIO & mainContactor);
-    setOutput(config->secondaryContactorOutput, logicIO & secondaryContactor);
-    setOutput(config->fastChargeContactorOutput, logicIO & fastChargeContactor);
+    setOutput(config->prechargeRelayOutput, logicIO & preChargeRelay, &status.preChargeRelay);
+    setOutput(config->mainContactorOutput, logicIO & mainContactor, &status.mainContactor);
+    setOutput(config->secondaryContactorOutput, logicIO & secondaryContactor, &status.secondaryContactor);
+    setOutput(config->fastChargeContactorOutput, logicIO & fastChargeContactor, &status.fastChargeContactor);
 
-    setOutput(config->enableMotorOutput, logicIO & enableMotor);
-    setOutput(config->enableChargerOutput, logicIO & enableCharger);
-    setOutput(config->enableDcDcOutput, logicIO & enableDcDc);
-    setOutput(config->enableHeaterOutput, logicIO & enableHeater);
+    setOutput(config->enableMotorOutput, logicIO & enableMotor, &status.enableMotor);
+    setOutput(config->enableChargerOutput, logicIO & enableCharger, &status.enableCharger);
+    setOutput(config->enableDcDcOutput, logicIO & enableDcDc, &status.enableDcDc);
+    setOutput(config->enableHeaterOutput, logicIO & enableHeater, &status.enableHeater);
 
-    setOutput(config->heaterValveOutput, logicIO & heaterValve);
-    setOutput(config->heaterPumpOutput, logicIO & heaterPump);
-    setOutput(config->coolingPumpOutput, logicIO & coolingPump);
-    setOutput(config->coolingFanOutput, logicIO & coolingFan);
+    setOutput(config->heaterValveOutput, logicIO & heaterValve, &status.heaterValve);
+    setOutput(config->heaterPumpOutput, logicIO & heaterPump, &status.heaterPump);
+    setOutput(config->coolingPumpOutput, logicIO & coolingPump, &status.coolingPump);
+    setOutput(config->coolingFanOutput, logicIO & coolingFan, &status.coolingFan);
 
-    setOutput(config->brakeLightOutput, logicIO & brakeLight);
-    setOutput(config->reverseLightOutput, logicIO & reverseLight);
-    setOutput(config->powerSteeringOutput, logicIO & powerSteering);
-    setOutput(config->unusedOutput, logicIO & unused);
+    setOutput(config->brakeLightOutput, logicIO & brakeLight, &status.brakeLight);
+    setOutput(config->reverseLightOutput, logicIO & reverseLight, &status.reverseLight);
+    setOutput(config->powerSteeringOutput, logicIO & powerSteering, &status.powerSteering);
+    setOutput(config->unusedOutput, logicIO & unused, &status.unused);
 
     if (Logger::isDebug()) {
-        Logger::debug(this,
-                "state: %d, pre-charge: %d, main: %d, secondary: %d, fast chrg: %d, motor: %d, charger: %d, DCDC: %d",
-                frame->data.byte[4], logicIO & preChargeRelay, logicIO & mainContactor, logicIO & secondaryContactor, logicIO & fastChargeContactor,
-                logicIO & enableMotor, logicIO & enableCharger, logicIO & enableDcDc);
-        Logger::debug(this,
-                "heater: %d, valve: %d, heater pump: %d, cooling pump: %d, fan: %d, brake: %d, reverse: %d, power steer: %d, unused: %d",
-                logicIO & enableHeater, logicIO & heaterValve, logicIO & heaterPump, logicIO & coolingPump, logicIO & coolingFan,
-                logicIO & brakeLight, logicIO & reverseLight, logicIO & powerSteering, logicIO & unused);
+        Logger::debug(this, "state: %d, pre-charge: %d, main: %d, secondary: %d, fast chrg: %d, motor: %d, charger: %d, DCDC: %d",
+                frame->data.byte[4], status.preChargeRelay, status.mainContactor, status.secondaryContactor, status.fastChargeContactor,
+                status.enableMotor, status.enableCharger, status.enableDcDc);
+        Logger::debug(this, "heater: %d, valve: %d, heater pump: %d, cooling pump: %d, fan: %d, brake: %d, reverse: %d, power steer: %d, unused: %d",
+                status.enableHeater, status.heaterValve, status.heaterPump, status.coolingPump, status.coolingFan, status.brakeLight,
+                status.reverseLight, status.powerSteering, status.unused);
     }
 }
 
@@ -247,23 +239,6 @@ void CanIO::processGevcuAnalogIO(CAN_FRAME *frame)
     status.analogIn[1] = frame->data.s1;
     status.analogIn[2] = frame->data.s2;
     status.analogIn[3] = frame->data.s3;
-}
-
-/**
- * Prints the status of all outputs
- */
-void CanIO::printStatus()
-{
-    CanIOConfiguration *config = (CanIOConfiguration *) getConfiguration();
-
-    Logger::console("state: %d, pre-charge: %d, main: %d, secondary: %d, fast chrg: %d, motor: %d, charger: %d, DCDC: %d", status.getSystemState(),
-            getOutput(config->prechargeRelayOutput), getOutput(config->mainContactorOutput), getOutput(config->secondaryContactorOutput),
-            getOutput(config->fastChargeContactorOutput), getOutput(config->enableMotorOutput), getOutput(config->enableChargerOutput),
-            getOutput(config->enableDcDcOutput));
-    Logger::console("heater: %d, valve: %d, heater pump: %d, cooling pump: %d, fan: %d, brake: %d, reverse: %d, power steer: %d, unused: %d",
-            getOutput(config->enableHeaterOutput), getOutput(config->heaterValveOutput), getOutput(config->heaterPumpOutput),
-            getOutput(config->coolingPumpOutput), getOutput(config->coolingFanOutput), getOutput(config->brakeLightOutput),
-            getOutput(config->reverseLightOutput), getOutput(config->powerSteeringOutput), getOutput(config->unusedOutput));
 }
 
 DeviceType CanIO::getType()
@@ -342,8 +317,8 @@ void CanIO::loadConfiguration()
     }
     Logger::info(this, "prechargeRelay: %d, mainContactor: %d, secondaryContactor:%d, fastChargeContactor: %d", config->prechargeRelayOutput,
             config->mainContactorOutput, config->secondaryContactorOutput, config->fastChargeContactorOutput);
-    Logger::info(this, "enableMotor: %d, enableCharger: %d, enableDcDc:%d, enableHeater: %d", config->enableMotorOutput,
-            config->enableChargerOutput, config->enableDcDcOutput, config->enableHeaterOutput);
+    Logger::info(this, "enableMotor: %d, enableCharger: %d, enableDcDc:%d, enableHeater: %d", config->enableMotorOutput, config->enableChargerOutput,
+            config->enableDcDcOutput, config->enableHeaterOutput);
     Logger::info(this, "heaterValve: %d, heaterPump: %d, coolingPump:%d, coolingFan: %d", config->heaterValveOutput, config->heaterPumpOutput,
             config->coolingPumpOutput, config->coolingFanOutput);
     Logger::info(this, "brakeLight: %d, reverseLight: %d, powerSteering:%d, unused: %d", config->brakeLightOutput, config->reverseLightOutput,
