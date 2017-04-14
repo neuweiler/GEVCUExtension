@@ -10,15 +10,19 @@ void createDevices()
     deviceManager.addDevice(new FlowMeter(FLOW_METER_HEATER, CFG_FLOW_METER_HEATER));
 }
 
+void delayStart(uint8_t seconds)
+{
+    for (int i = seconds; i > 0; i--) {
+        SerialUSB.println(i);
+        delay(1000);
+    }
+}
+
 void setup()
 {
     SerialUSB.begin(CFG_SERIAL_SPEED);
-
-    // delay startup to have enough time to activate logging
-//    for (int i = 5; i > 0; i--) {
-//        SerialUSB.println(i);
-//        delay(1000);
-//    }
+//    delayStart(10);
+    SerialUSB.println(CFG_VERSION);
 
     memCache.setup();
     canHandlerEv.setup();
