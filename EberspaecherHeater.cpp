@@ -52,7 +52,7 @@ void EberspaecherHeater::setup()
     digitalWrite(CFG_CAN1_HV_MODE_PIN, HIGH);
 
     prepareFrames();
-    temperatureDevice = (Temperature *)deviceManager.getDeviceByID(TEMPERATURE);
+    temperatureDevice = (Temperature *) deviceManager.getDeviceByID(TEMPERATURE);
     ready = true;
 
     canHandlerCar.attach(this, CAN_MASKED_ID, CAN_MASK, true);
@@ -77,8 +77,23 @@ void EberspaecherHeater::tearDown()
  */
 void EberspaecherHeater::handleTick()
 {
-    calculatePower();
-    sendControl();
+    calculateTemperature();
+
+    if (powerOn) {
+        if (!running) {
+            sendWakeup();
+            running = true;
+        } else {
+            calculatePower();
+            sendControl();
+        }
+    } else {
+        if (running) { // request zero power
+            powerRequested = 0;
+            sendControl();
+            running = false;
+        }
+    }
 
     if (tickCounter++ > 16) {
         sendStatus();
@@ -107,7 +122,6 @@ void EberspaecherHeater::handleCanFrame(CAN_FRAME *frame)
  */
 void EberspaecherHeater::handleStateChange(Status::SystemState oldState, Status::SystemState newState)
 {
-
     Device::handleStateChange(oldState, newState);
 
     // power on the device only if the external temperature is lower than or equal to configured temperature
@@ -196,6 +210,16 @@ void EberspaecherHeater::prepareFrames()
     frameStatus.length = 8;
 }
 
+/**
+ * /brief Calculate the water temperature from the heater's temperature sensor
+ */
+void EberspaecherHeater::calculateTemperature()
+{
+    if (status.analogIn[0] != 0) {
+        waterTemperature = map(constrain(status.analogIn[0], 0, 2100), 0, 2100, 0, 100);
+    }
+}
+
 /*
  * Calculate the desired output power based on measured temperature.
  */
@@ -204,14 +228,8 @@ void EberspaecherHeater::calculatePower()
     EberspaecherHeaterConfiguration *config = (EberspaecherHeaterConfiguration *) getConfiguration();
 
     powerRequested = 0;
-
-    // get water temperature from heater's temperature sensor
-    if (status.analogIn[0] != 0) {
-        waterTemperature = map(constrain(status.analogIn[0], 0, 2100), 0, 2100, 0, 100);
-    }
-
     // calculate power
-    if (powerOn && (waterTemperature <= config->targetTemperature) && millis() > CFG_DELAY_HEATER) {
+    if (running && status.enableHeater && (waterTemperature <= config->targetTemperature) && millis() > CFG_DELAY_HEATER) {
         // if below derating temperature, apply maximum power
         if (config->deratingTemperature == 255 || waterTemperature < config->deratingTemperature) {
             powerRequested = config->maxPower;
@@ -222,8 +240,8 @@ void EberspaecherHeater::calculatePower()
     }
 
     if (Logger::isDebug()) {
-        Logger::debug(this, "analog in: %d, water temperature: %f C, power requested: %d, power on: %d",
-                status.analogIn[0], waterTemperature, powerRequested, powerOn);
+        Logger::debug(this, "analog in: %d, water temperature: %f C, power requested: %d, running: %d", status.analogIn[0], waterTemperature,
+                powerRequested, running);
     }
 }
 
@@ -234,22 +252,6 @@ void EberspaecherHeater::calculatePower()
  */
 void EberspaecherHeater::sendControl()
 {
-    if (powerOn) {
-        if (!running) {
-            sendWakeup();
-            running = true;
-            return;
-        }
-    } else {
-        if (running) {
-            // request zero power
-            frameControl.data.byte[1] = 0;
-            canHandlerCar.sendFrame(frameControl);
-            running = false;
-        }
-        return;
-    }
-
     // map requested power (percentage) to valid range of heater (0 - 0x85)
     frameControl.data.byte[1] = map(constrain(powerRequested, 0, MAX_POWER_WATT), 0, MAX_POWER_WATT, 0, 0x85);
 
@@ -270,7 +272,7 @@ void EberspaecherHeater::sendStatus()
     frameStatus.data.bytes[0] = (powerRequested & 0xFF00) >> 8;
     frameStatus.data.bytes[1] = (powerRequested & 0x00FF);
     frameStatus.data.bytes[2] = waterTemperature;
-    frameStatus.data.bytes[3] = (powerOn ? 1 << 1 : 0) | (running ? 1 : 0);
+    frameStatus.data.bytes[3] = (running ? 1 : 0);
 
     canHandlerEv.sendFrame(frameStatus);
 }
@@ -280,8 +282,8 @@ void EberspaecherHeater::sendStatus()
 void EberspaecherHeater::processStatus(BytesUnion data)
 {
     if (data.value != 0) {
-        Logger::info(this, "status message %#x %#x %#x %#x %#x %#x %#x %#x", data.bytes[0], data.bytes[1], data.bytes[2],
-                data.bytes[3], data.bytes[4], data.bytes[5], data.bytes[6], data.bytes[7]);
+        Logger::info(this, "status message %#x %#x %#x %#x %#x %#x %#x %#x", data.bytes[0], data.bytes[1], data.bytes[2], data.bytes[3],
+                data.bytes[4], data.bytes[5], data.bytes[6], data.bytes[7]);
         //TODO: implement processing of bits and bytes
     }
 }
@@ -340,7 +342,8 @@ void EberspaecherHeater::loadConfiguration()
         config->extTemperatureSensorAddress[7] = 0x49;
         saveConfiguration();
     }
-    Logger::info(this, "maxPower: %d, target temperature: %d deg C, ext temperature on: %d deg C", config->maxPower, config->targetTemperature, config->extTemperatureOn);
+    Logger::info(this, "maxPower: %d, target temperature: %d deg C, ext temperature on: %d deg C", config->maxPower, config->targetTemperature,
+            config->extTemperatureOn);
 }
 
 /*

@@ -35,7 +35,6 @@
 // CAN bus id's for frames sent to GEVCU
 #define CAN_ID_GEVCU_HEATER     0x72b
 
-
 class EberspaecherHeaterConfiguration: public DeviceConfiguration
 {
 public:
@@ -79,6 +78,7 @@ private:
     uint8_t waterTemperature; // in degree C
 
     void calculatePower();
+    void calculateTemperature();
     void sendControl();
     void sendWakeup();
     void sendStatus();
